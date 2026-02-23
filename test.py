@@ -37,6 +37,6 @@ folder_path = Path("c://python")
 category_dirs = [folder_path / cat for cat in file_types_ext.keys()]
 print(category_dirs)
 
-category_dirs.append(folder_path / "Others")
+category_dirs.append(folder_path / "Other")
 
 print(category_dirs)
