@@ -95,8 +95,8 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
 
-    for file in files:
-        if file.is_file():
+    for file in files: #for each file in the folder or subforlder if user chooses
+        if file.is_file(): #cheks if its a file
             ext = file.suffix.lower()
             if ext:
                 dest_folder = save_path / ext[1:] #folder name without dot like .png -> png
