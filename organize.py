@@ -109,6 +109,9 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
     print(f"Files in '{folder_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
 
 def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
+    ...
+
+def org_created_date(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
 
@@ -116,10 +119,6 @@ def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
         if file.is_file():
             creation_time = getattr(file.stat(), 'st_birthtime', file.stat().st_ctime)
             print(file, creation_time)
-
-
-def org_created_date(folder_path,is_com,is_sub,create_nf):
-    ...
 
 def org_modified_date(folder_path,is_com,is_sub,create_nf):
     ...
