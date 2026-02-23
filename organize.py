@@ -63,32 +63,17 @@ def org_file_type(folder_path,is_com,is_sub,create_nf):
     category_dirs = [save_path / cat for cat in file_types_ext.keys()] #getting file types from file_types_ext
     category_dirs.append(save_path / "Others") #append others folder path
 
-    for file in files:
-        if file.is_file() and all(not str(file).startswith(str(d)) for d in category_dirs):
+    for file in files: #for each file in the folder or subforlder if user chooses
+        if file.is_file(): #cheks if its a file
             ext = file.suffix.lower()
-            moved = False
+            category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
+            dest_folder = save_path / category #folder name with catagory like Images,Documents,Video,Music,Others
+            dest_folder.mkdir(exist_ok=True)
 
-            for category, extensions in file_types_ext.items():
-                if ext in extensions:
-                    dest_folder = save_path / category
-                    dest_folder.mkdir(exist_ok=True) #make the folder for catagory skip if alredy created.
-
-                    if is_com == "move": #if user choosed move moving files
-                        shutil.move(str(file), str(dest_folder / file.name))
-                    else: #if user choosed to copy copying files
-                        shutil.copy2(str(file), str(dest_folder / file.name))
-                    moved = True
-                    break
-
-            if not moved:
-                dest_folder = save_path / "Others"
-                dest_folder.mkdir(exist_ok=True)
-                if is_com == "move":
-                    shutil.move(str(file), str(dest_folder / file.name))
-                else:
-                    shutil.copy2(str(file), str(dest_folder / file.name))
-
-    print(f"Files in '{folder_path}' organized by file type ({'moved' if is_com == "move" else 'copied'})")
+            if is_com == "move":
+                shutil.move(str(file), str(dest_folder / file.name))
+            else:
+                shutil.copy2(str(file), str(dest_folder / file.name))
 
 def org_file_ext(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
@@ -108,7 +93,22 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
     print(f"Files in '{folder_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
 
 def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
-    ...
+    files = load_list_files(folder_path,is_sub)
+    save_path = save_path_fuc(folder_path,create_nf)
+
+    for file in files:
+        if file.is_file():
+            ext = file.suffix.lower()
+            category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
+            dest_folder = save_path / category / ext[1:] #folder name with catagory and extention like Images/png
+            dest_folder.mkdir(parents=True, exist_ok=True)
+
+            if is_com == "move":
+                shutil.move(str(file), str(dest_folder / file.name))
+            else:
+                shutil.copy2(str(file), str(dest_folder / file.name))
+
+    print(f"Files in '{folder_path}' organized by file type and extension ({'moved' if is_com == "move" else 'copied'})")
 
 def org_modified_date(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
