@@ -1,15 +1,8 @@
 # pakages expected to use
-# shutil
 # datetime
 # logging
 # re
 # hashlib (optional advanced)
-
-# command line arguments setup
-# project
-#   -path ........... -(b,o,r) OR just -(b,o,r)
-#
-
 import argparse
 import sys
 import os
