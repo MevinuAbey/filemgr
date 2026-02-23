@@ -112,9 +112,14 @@ def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
 
+    for file in files:
+        if file.is_file():
+            creation_time = getattr(file.stat(), 'st_birthtime', file.stat().st_ctime)
+            print(file, creation_time)
+
 
 def org_created_date():
-    ...
+    
 
 def org_modified_date():
     ...
