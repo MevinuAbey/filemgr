@@ -34,7 +34,7 @@ def menu():
 
 def load_list_files(folder_path,is_sub):
     #if user organizing files in subfolders using "rglog" otherwise using "iterdir" for listing files
-    files = folder_path.relob("*") if is_sub == "yes" else folder_path.iterdir()
+    files = folder_path.rglob("*") if is_sub == "yes" else folder_path.iterdir()
     return files
 
 def save_path_fuc(folder_path,create_nf):     
