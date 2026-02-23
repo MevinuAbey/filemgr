@@ -96,7 +96,7 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
     save_path = save_path_fuc(folder_path,create_nf)
 
     # Skiping the catagorized folders we'll create
-    category_dirs = [save_path / ext for ext in file_types_ext.values()] #getting file types from file_types_ext
+    category_dirs = [save_path / ext for exts in file_types_ext.values() for ext in exts] #getting file types from file_types_ext
     category_dirs.append(save_path / "Others") #append others folder path
     print(category_dirs)
 
