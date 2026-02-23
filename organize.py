@@ -125,8 +125,9 @@ def org_modified_date(folder_path,is_com,is_sub,create_nf):
                 shutil.move(str(file), str(dest_folder / file.name))
             else:
                 shutil.copy2(str(file), str(dest_folder / file.name))
-                
+
     print(f"Files in '{folder_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
+
 file_types_ext = {
     "Images": [
         ".png",
