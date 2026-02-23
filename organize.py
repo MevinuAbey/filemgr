@@ -22,7 +22,7 @@ def main(path):
 
 def menu():
     org_option = questionary.select("Organize Files in to folders according to:",
-        choices=["file type","file extention","file type and file extention","created date","modified date"]).ask()
+        choices=["file type","file extention","file type and file extention","modified date"]).ask()
 
     is_sub = questionary.select("also organize files in sub folders:",choices=["yes","no",]).ask()
 
@@ -52,7 +52,6 @@ def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file type and file extention": org_file_type_ext(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "created date": org_created_date(folder_path,is_com,is_sub,create_nf)
     elif org_option == "modified date": org_modified_date(folder_path,is_com,is_sub,create_nf)
 
 def org_file_type(folder_path,is_com,is_sub,create_nf):
@@ -111,7 +110,8 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
 def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
     ...
 
-def org_created_date(folder_path,is_com,is_sub,create_nf):
+
+def org_modified_date(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
 
@@ -120,10 +120,6 @@ def org_created_date(folder_path,is_com,is_sub,create_nf):
             mod_time = file.stat().st_mtime
             mod_date = datetime.datetime.fromtimestamp(mod_time)
             print(file, mod_date)
-            
-
-def org_modified_date(folder_path,is_com,is_sub,create_nf):
-    ...
 
 file_types_ext = {
     "Images": [
