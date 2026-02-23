@@ -6,8 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
-#ignore this folder
+#ignore
 Others/
+test.py
 
 # Distribution / packaging
 .Python
