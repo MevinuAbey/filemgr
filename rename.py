@@ -20,4 +20,8 @@ import json
 def main(path):
     folder_path = Path(path)
 
-
+def menu():
+    rename_option = questionary.select(
+        "Choose a renaming option:",
+        choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
+    return rename_option
