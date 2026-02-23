@@ -51,9 +51,9 @@ def save_path_fuc(folder_path,create_nf):
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "file type and file extention": org_file_type_ext()
-    elif org_option == "created date": org_created_date()
-    elif org_option == "modified date": org_modified_date()
+    elif org_option == "file type and file extention": org_file_type_ext(folder_path,is_com,is_sub,create_nf)
+    elif org_option == "created date": org_created_date(folder_path,is_com,is_sub,create_nf)
+    elif org_option == "modified date": org_modified_date(folder_path,is_com,is_sub,create_nf)
 
 def org_file_type(folder_path,is_com,is_sub,create_nf):
     
@@ -108,9 +108,10 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
                     shutil.copy2(str(file), str(dest_folder / file.name))
     print(f"Files in '{folder_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
 
+def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
+    files = load_list_files(folder_path,is_sub)
+    save_path = save_path_fuc(folder_path,create_nf)
 
-def org_file_type_ext():
-    ...
 
 def org_created_date():
     ...
