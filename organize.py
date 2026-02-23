@@ -110,7 +110,6 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
 def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
     ...
 
-
 def org_modified_date(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
@@ -119,8 +118,15 @@ def org_modified_date(folder_path,is_com,is_sub,create_nf):
         if file.is_file():
             mod_time = file.stat().st_mtime
             mod_date = datetime.datetime.fromtimestamp(mod_time)
-            print(file, mod_date)
+            dest_folder = save_path / f"{mod_date.year}" / f"{mod_date.month:02d}" / f"{mod_date.day:02d}"
+            dest_folder.mkdir(parents=True, exist_ok=True)
 
+            if is_com == "move":
+                shutil.move(str(file), str(dest_folder / file.name))
+            else:
+                shutil.copy2(str(file), str(dest_folder / file.name))
+                
+    print(f"Files in '{folder_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
 file_types_ext = {
     "Images": [
         ".png",
