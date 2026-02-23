@@ -10,7 +10,7 @@
 # ask if need to move files when organizing or copy them to organized folder.
 # export txt report in that show file conunt accrdint to file type and file extention.
 #
-import os
+import datetime
 import questionary
 from pathlib import Path
 import shutil
@@ -117,8 +117,10 @@ def org_created_date(folder_path,is_com,is_sub,create_nf):
 
     for file in files:
         if file.is_file():
-            creation_time = getattr(file.stat(), 'st_birthtime', file.stat().st_ctime)
-            print(file, creation_time)
+            mod_time = file.stat().st_mtime
+            mod_date = datetime.datetime.fromtimestamp(mod_time)
+            print(file, mod_date)
+            
 
 def org_modified_date(folder_path,is_com,is_sub,create_nf):
     ...
