@@ -50,7 +50,7 @@ def save_path_fuc(folder_path,create_nf):
 
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "file extention": org_file_ext()
+    elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file type and file extention": org_file_type_ext()
     elif org_option == "created date": org_created_date()
     elif org_option == "modified date": org_modified_date()
@@ -94,6 +94,39 @@ def org_file_type(folder_path,is_com,is_sub,create_nf):
 def org_file_ext(folder_path,is_com,is_sub,create_nf):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
+
+    # Skiping the catagorized folders we'll create
+    category_dirs = [save_path / ext for ext in file_types_ext.values()] #getting file types from file_types_ext
+    category_dirs.append(save_path / "Others") #append others folder path
+    print(category_dirs)
+
+    for file in files:
+        if file.is_file() and all(not str(file).startswith(str(d)) for d in category_dirs):
+            ext = file.suffix.lower()
+            moved = False
+
+            for category, extensions in file_types_ext.items():
+                if ext in extensions:
+                    dest_folder = save_path / category
+                    dest_folder.mkdir(exist_ok=True) #make the folder for catagory skip if alredy created.
+
+                    if is_com == "move": #if user choosed move moving files
+                        shutil.move(str(file), str(dest_folder / file.name))
+                    else: #if user choosed to copy copying files
+                        shutil.copy2(str(file), str(dest_folder / file.name))
+                    moved = True
+                    break
+
+            if not moved:
+                dest_folder = save_path / "Others"
+                dest_folder.mkdir(exist_ok=True)
+                if is_com == "move":
+                    shutil.move(str(file), str(dest_folder / file.name))
+                else:
+                    shutil.copy2(str(file), str(dest_folder / file.name))
+
+    print(f"Files in '{folder_path}' organized by file type ({'moved' if is_com == "move" else 'copied'})")
+
 
 
 def org_file_type_ext():
