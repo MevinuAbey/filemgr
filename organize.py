@@ -118,10 +118,10 @@ def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
             print(file, creation_time)
 
 
-def org_created_date():
+def org_created_date(folder_path,is_com,is_sub,create_nf):
     ...
 
-def org_modified_date():
+def org_modified_date(folder_path,is_com,is_sub,create_nf):
     ...
 
 file_types_ext = {
