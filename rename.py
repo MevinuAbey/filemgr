@@ -19,7 +19,6 @@ def load_list_files(folder_path):
     files = folder_path.iterdir()
     return files
 
-
 def do_rename(rename_option, folder_path):
     if rename_option == "Prefix":
         prefix = questionary.text("Enter the prefix to add:").ask()
