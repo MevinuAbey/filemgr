@@ -8,12 +8,16 @@ import json
 
 def main(path):
     folder_path = Path(path)
+    rename_option = menu()
+    preview_rename(folder_path, rename_option)
+    do_rename(rename_option, folder_path)
 
 def menu():
     rename_option = questionary.select(
         "Choose a renaming option:",
         choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
     return rename_option
+
 
 def do_rename(rename_option, folder_path):
     if rename_option == "Prefix":
@@ -38,6 +42,12 @@ def get_file_type():
     file_type = questionary.text("Enter file type filter (e.g., .txt) or leave blank for all files:").ask()
     file_type = file_type.strip() if file_type else None
     return file_type
+
+def preview_rename(folder_path, rename_option):
+    print(f"Preview of '{rename_option}' renaming:")
+        for file in folder_path.iterdir():
+            if file.is_file():
+                print(file.name)
 
 def rename_prefix(folder_path, prefix):
     file_type = get_file_type()
