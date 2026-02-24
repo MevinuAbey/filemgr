@@ -1,5 +1,3 @@
-#Preview mode
-#Conflict handling
 import questionary
 from pathlib import Path
 import re
@@ -9,7 +7,6 @@ import json
 def main(path):
     folder_path = Path(path)
     rename_option = menu()
-    preview_rename(folder_path, rename_option)
     do_rename(rename_option, folder_path)
 
 def menu():
@@ -43,11 +40,12 @@ def get_file_type():
     file_type = file_type.strip() if file_type else None
     return file_type
 
-def preview_rename(folder_path, rename_option):
+def preview_rename(folder_path, rename_option,):
     print(f"Preview of '{rename_option}' renaming:")
         for file in folder_path.iterdir():
-            if file.is_file():
-                print(file.name)
+            if rename_option == "Prefix":
+                prefix = questionary.text("Enter the prefix to add:").ask()
+                new_name = prefix + file.name
 
 def rename_prefix(folder_path, prefix):
     file_type = get_file_type()
