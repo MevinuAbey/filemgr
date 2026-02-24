@@ -90,6 +90,7 @@ def rename_suffix(folder_path, suffix):
         if file.is_file() and (not file_type or file.suffix == file_type):
             new_name = file.stem + suffix + file.suffix
             file.rename(folder_path / new_name)
+    print("Renaming completed.")
 
 def rename_replace_text(folder_path, old_text, new_text):
     file_type = get_file_type()
