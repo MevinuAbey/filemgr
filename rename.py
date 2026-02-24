@@ -1,8 +1,8 @@
+# rename module for filemgr
 import questionary # type: ignore
 from pathlib import Path
 import re
 import json
-
 
 def main(path):
     folder_path = Path(path)
