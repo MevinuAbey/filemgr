@@ -55,6 +55,7 @@ def get_file_type():
 
 def preview_rename(folder_path, rename_option, *args):    
     files = load_list_files(folder_path)
+    print(file in files)
     print(f"Preview of renaming {rename_option}")
     if rename_option == "Prefix":
         prefix = args[0]
