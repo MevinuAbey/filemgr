@@ -46,6 +46,14 @@ def save_report(folder_path,is_sub,create_nf,org_option):
             if file.is_file():
                 ext = file.suffix.lower()
                 report[file.name] = ext
+    
+    elif org_option == "file type and file extention":
+        for file in files:
+            if file.is_file():
+                ext = file.suffix.lower()
+                category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
+                report[file.name] = f"{category} ({ext})"
+    
 
     with open(save_path / "report.txt", "w") as f:
         f.write(f"Organized by: {org_option}\n")
