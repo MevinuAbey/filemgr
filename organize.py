@@ -24,28 +24,26 @@ def menu():
     org_option = questionary.select("Organize Files in to folders according to:",
         choices=["file type","file extention","file type and file extention","modified date"]).ask()
 
-    is_sub = questionary.select("also organize files in sub folders:",choices=["yes","no",]).ask()
+    is_sub = questionary.confirm("also organize files in sub folders:",choices=["yes","no",]).ask()
 
     is_com = questionary.select("move files when organizing or copy them:",choices=["copy","move",]).ask()
 
-    create_nf = questionary.select("create new folder when organizing:",choices=["yes","no",]).ask()
+    create_nf = questionary.confirm("create new folder when organizing:",choices=["yes","no",]).ask()
 
     return org_option,is_sub,is_com,create_nf
 
 def load_list_files(folder_path,is_sub):
     #if user organizing files in subfolders using "rglog" otherwise using "iterdir" for listing files
-    files = folder_path.rglob("*") if is_sub == "yes" else folder_path.iterdir()
+    files = folder_path.rglob("*") if is_sub else folder_path.iterdir()
     return files
 
 def save_path_fuc(folder_path,create_nf):     
     #if user choosed make diffrent foldr for organized files make it
-    if create_nf == "yes":
+    if create_nf :
         save_path = folder_path / "organized"
         save_path.mkdir(exist_ok=True)
-    elif create_nf == "no":
-        save_path = folder_path
     else:
-        print("plz enter valid input")
+        save_path = folder_path
     return save_path
 
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
