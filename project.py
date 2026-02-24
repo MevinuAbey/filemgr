@@ -7,7 +7,7 @@ import argparse
 import sys
 import os
 from pathlib import Path
-import questionary
+import questionary # type: ignore
 import backup
 import organize
 import rename
