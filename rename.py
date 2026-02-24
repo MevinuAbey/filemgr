@@ -98,6 +98,7 @@ def rename_replace_text(folder_path, old_text, new_text):
         if file.is_file() and (not file_type or file.suffix == file_type):
             new_name = file.name.replace(old_text, new_text)
             file.rename(folder_path / new_name)
+    print("Renaming completed.")
 
 def rename_auto_numbering(folder_path, base_name, start_number):
     file_type = get_file_type()
