@@ -1,6 +1,4 @@
 #Preview mode
-#⭐ Add:
-#File type filter
 #Conflict handling
 #Undo feature
 import questionary
