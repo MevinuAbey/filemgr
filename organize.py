@@ -63,8 +63,11 @@ def save_report(folder_path,is_sub,create_nf,org_option):
 
     with open(save_path / "report.txt", "w") as f:
         f.write(f"Organized by: {org_option}\n")
+        f.write(f"Total files organized: {len(report)}\n\n")
+        for file_name, category in report.items():
+            f.write(f"{file_name} -> {category}\n")
 
-
+            
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
