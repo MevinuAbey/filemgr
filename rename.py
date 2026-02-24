@@ -1,6 +1,5 @@
 #Preview mode
 #Conflict handling
-#Undo feature
 import questionary
 from pathlib import Path
 import re
