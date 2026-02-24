@@ -1,9 +1,6 @@
 #✅ Must Include:
 #Bulk rename
-#Prefix
-#Suffix
 #Replace text
-#Auto numbering
 #Preview mode
 #⭐ Add:
 #File type filter
@@ -38,5 +35,8 @@ def do_rename(rename_option, folder_path):
         new_text = questionary.text("Enter the new text:").ask()
         
     elif rename_option == "Auto Numbering":
-        
-        pass
+        base_name = questionary.text("Enter the base name for numbering:").ask()
+        start_number = questionary.text("Enter the starting number(leave blank for 1):").ask()
+
+    file_type = questionary.text("Enter file type filter (e.g., .txt) or leave blank for all files:").ask()
+    file_type = file_type.strip() if file_type else None
