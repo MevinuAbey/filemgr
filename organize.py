@@ -1,15 +1,4 @@
-# Expected functions from this script
-# 1st option, organize files into diffrent folders acording to file type like vid,img,document.
-# 2nd option, organize files into diffrent folders accoring to file extention like png,jpg,mp4,pdf.
-# 3rd option, organize files into diffrent folders according to file type and in that file type organize those files in to foders
-#             using file extentions.
-# 4th option, organize files into diffrent folders acording to created date.(year->month->date)
-# 5th option, organize files into diffrent folders acording to modified date.(year->month->date)
-#
-# ask if scan whole folder including sub folders or only files in that folder.
-# ask if need to move files when organizing or copy them to organized folder.
-# export txt report in that show file conunt accrdint to file type and file extention.
-#
+# organize module for filemgr
 import datetime
 import questionary # type: ignore
 from pathlib import Path
