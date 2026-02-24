@@ -1,8 +1,4 @@
-# pakages expected to use
-# datetime
-# logging
-# re
-# hashlib (optional advanced)
+
 import argparse
 import sys
 import os
