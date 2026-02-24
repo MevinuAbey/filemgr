@@ -24,11 +24,11 @@ def menu():
     org_option = questionary.select("Organize Files in to folders according to:",
         choices=["file type","file extention","file type and file extention","modified date"]).ask()
 
-    is_sub = questionary.confirm("also organize files in sub folders:",choices=["yes","no",]).ask()
+    is_sub = questionary.confirm("also organize files in sub folders:").ask()
 
     is_com = questionary.select("move files when organizing or copy them:",choices=["copy","move",]).ask()
 
-    create_nf = questionary.confirm("create new folder when organizing:",choices=["yes","no",]).ask()
+    create_nf = questionary.confirm("create new folder when organizing:").ask()
 
     return org_option,is_sub,is_com,create_nf
 
