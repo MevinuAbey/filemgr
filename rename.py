@@ -1,13 +1,8 @@
-#✅ Must Include:
-#Bulk rename
-#Replace text
 #Preview mode
 #⭐ Add:
 #File type filter
 #Conflict handling
 #Undo feature
-
-
 import questionary
 from pathlib import Path
 import re
