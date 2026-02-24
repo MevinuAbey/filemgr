@@ -1,2 +1,2 @@
 # filemgr
-CS50 Python Final Project
+CS50 Python Final Project by Mevinu Abeysinghe
