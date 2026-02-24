@@ -11,7 +11,7 @@
 # export txt report in that show file conunt accrdint to file type and file extention.
 #
 import datetime
-import questionary
+import questionary # type: ignore
 from pathlib import Path
 import shutil
 
