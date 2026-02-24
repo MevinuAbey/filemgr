@@ -1,4 +1,4 @@
-import questionary
+import questionary # type: ignore
 from pathlib import Path
 import re
 import json
