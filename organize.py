@@ -42,7 +42,18 @@ def save_path_fuc(folder_path,create_nf):
         save_path = folder_path
     return save_path
 
-def save_report(folder_path):
+def save_report(folder_path,is_sub,create_nf):
+    files = load_list_files(folder_path,is_sub)
+    save_path = save_path_fuc(folder_path,create_nf)
+    report = {}
+    for file in files:
+        if file.is_file():
+            ext = file.suffix.lower()
+            report[ext] = report.get(ext, 0) + 1
+            
+    with open(save_path / "report.txt", "w") as f:
+        for ext, count in report.items():
+            f.write(f"{ext}: {count}\n")
 
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
