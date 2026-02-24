@@ -54,22 +54,23 @@ def get_file_type():
     return file_type
 
 def preview_rename(folder_path, rename_option, *args):    
+    files = load_list_files(folder_path)
     print(f"Preview of renaming {rename_option}")
     if rename_option == "Prefix":
         prefix = args[0]
-        for file in folder_path.iterdir():
+        for file in files:
             if file.is_file():
                 new_name = prefix + file.name
                 print(f"{file.name} -> {new_name}")
     elif rename_option == "Suffix":
         suffix = args[0]
-        for file in folder_path.iterdir():
+        for file in files:
             if file.is_file():
                 new_name = file.stem + suffix + file.suffix
                 print(f"{file.name} -> {new_name}")
     elif rename_option == "Replace Text":
         old_text, new_text = args
-        for file in folder_path.iterdir():
+        for file in files:
             if file.is_file():
                 new_name = file.name.replace(old_text, new_text)
                 print(f"{file.name} -> {new_name}")
