@@ -19,16 +19,25 @@ def menu():
 def do_rename(rename_option, folder_path):
     if rename_option == "Prefix":
         prefix = questionary.text("Enter the prefix to add:").ask()
-        rename_prefix(folder_path, prefix)
+        preview_rename(folder_path, rename_option, prefix)
+        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
+        if confirm:
+            rename_prefix(folder_path, prefix)
         
     elif rename_option == "Suffix":
         suffix = questionary.text("Enter the suffix to add:").ask()
-        rename_suffix(folder_path, suffix)
+        preview_rename(folder_path, rename_option, suffix)
+        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
+        if confirm:
+            rename_suffix(folder_path, suffix)
         
     elif rename_option == "Replace Text":
         old_text = questionary.text("Enter the text to replace:").ask()
         new_text = questionary.text("Enter the new text:").ask()
-        rename_replace_text(folder_path, old_text, new_text)
+        preview_rename(folder_path, rename_option, old_text, new_text)
+        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
+        if confirm:
+            rename_replace_text(folder_path, old_text, new_text)
         
     elif rename_option == "Auto Numbering":
         base_name = questionary.text("Enter the base name for numbering:").ask()
@@ -40,12 +49,8 @@ def get_file_type():
     file_type = file_type.strip() if file_type else None
     return file_type
 
-def preview_rename(folder_path, rename_option,):
-    print(f"Preview of '{rename_option}' renaming:")
-        for file in folder_path.iterdir():
-            if rename_option == "Prefix":
-                prefix = questionary.text("Enter the prefix to add:").ask()
-                new_name = prefix + file.name
+def preview_rename(folder_path, rename_option, *args):    
+    print(f"Preview of renaming: {rename_option}")
 
 def rename_prefix(folder_path, prefix):
     file_type = get_file_type()
