@@ -40,7 +40,7 @@ def do_rename(rename_option, folder_path):
     elif rename_option == "Auto Numbering":
         base_name = questionary.text("Enter the base name for numbering:").ask()
         start_number = questionary.text("Enter the starting number(leave blank for 1):").ask()
-        rename_auto_numbering(folder_path, base_name, start_number
+        rename_auto_numbering(folder_path, base_name, start_number)
 
 def get_file_type():
     file_type = questionary.text("Enter file type filter (e.g., .txt) or leave blank for all files:").ask()
