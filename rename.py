@@ -11,8 +11,7 @@ def main(path):
 
 def menu():
     rename_option = questionary.select(
-        "Choose a renaming option:",
-        choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
+        "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
     return rename_option
 
 def load_list_files(folder_path):
@@ -83,6 +82,7 @@ def rename_prefix(folder_path, prefix):
         if file.is_file() and (not file_type or file.suffix == file_type):
             new_name = prefix + file.name
             file.rename(folder_path / new_name)
+    print("Renaming completed.")
 
 def rename_suffix(folder_path, suffix):
     file_type = get_file_type()
