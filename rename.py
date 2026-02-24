@@ -50,7 +50,25 @@ def get_file_type():
     return file_type
 
 def preview_rename(folder_path, rename_option, *args):    
-    print(f"Preview of renaming: {rename_option}")
+    print(f"Preview of renaming {rename_option}")
+    if rename_option == "Prefix":
+        prefix = args[0]
+        for file in folder_path.iterdir():
+            if file.is_file():
+                new_name = prefix + file.name
+                print(f"{file.name} -> {new_name}")
+    elif rename_option == "Suffix":
+        suffix = args[0]
+        for file in folder_path.iterdir():
+            if file.is_file():
+                new_name = file.stem + suffix + file.suffix
+                print(f"{file.name} -> {new_name}")
+    elif rename_option == "Replace Text":
+        old_text, new_text = args
+        for file in folder_path.iterdir():
+            if file.is_file():
+                new_name = file.name.replace(old_text, new_text)
+                print(f"{file.name} -> {new_name}")
 
 def rename_prefix(folder_path, prefix):
     file_type = get_file_type()
