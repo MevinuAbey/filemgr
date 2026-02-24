@@ -35,15 +35,21 @@ def save_report(folder_path,is_sub,create_nf,org_option):
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
     report = {}
-    for file in files:
-        if file.is_file():
-            ext = file.suffix.lower()
-            report[ext] = report.get(ext, 0) + 1
+    if org_option == "file type":
+        for file in files:
+            if file.is_file():
+                ext = file.suffix.lower()
+                category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
+                report[file.name] = category
+    elif org_option == "file extention":
+        for file in files:
+            if file.is_file():
+                ext = file.suffix.lower()
+                report[file.name] = ext
 
     with open(save_path / "report.txt", "w") as f:
         f.write(f"Organized by: {org_option}\n")
-        for ext, count in report.items():
-            f.write(f"{ext}: {count}\n")
+
 
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
