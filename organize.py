@@ -50,7 +50,7 @@ def save_report(folder_path,is_sub,create_nf):
         if file.is_file():
             ext = file.suffix.lower()
             report[ext] = report.get(ext, 0) + 1
-            
+
     with open(save_path / "report.txt", "w") as f:
         for ext, count in report.items():
             f.write(f"{ext}: {count}\n")
@@ -60,6 +60,7 @@ def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file type and file extention": org_file_type_ext(folder_path,is_com,is_sub,create_nf)
     elif org_option == "modified date": org_modified_date(folder_path,is_com,is_sub,create_nf)
+    save_report(folder_path,is_sub,create_nf)
 
 def org_file_type(folder_path,is_com,is_sub,create_nf):
     
