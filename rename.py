@@ -107,3 +107,4 @@ def rename_auto_numbering(folder_path, base_name, start_number):
         if file.is_file() and (not file_type or file.suffix == file_type):
             new_name = f"{base_name}_{idx}{file.suffix}"
             file.rename(folder_path / new_name)
+    print("Renaming completed.")
