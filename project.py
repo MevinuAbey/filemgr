@@ -1,4 +1,4 @@
-# File Manager (FileMgr)
+# File Manager (FileMgr) By Mevinu Abeysinghe
 import argparse
 import sys
 import os
