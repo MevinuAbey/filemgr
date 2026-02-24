@@ -15,6 +15,10 @@ def menu():
         choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
     return rename_option
 
+def load_list_files(folder_path):
+    files = folder_path.iterdir()
+    return files
+
 
 def do_rename(rename_option, folder_path):
     if rename_option == "Prefix":
