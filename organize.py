@@ -31,7 +31,7 @@ def save_path_fuc(folder_path,create_nf):
         save_path = folder_path
     return save_path
 
-def save_report(folder_path,is_sub,create_nf,org_option):
+def save_report(folder_path,is_sub,create_nf,org_option): #needs improvements
     files = load_list_files(folder_path,is_sub)
     save_path = save_path_fuc(folder_path,create_nf)
     report = {}
