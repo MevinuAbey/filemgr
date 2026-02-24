@@ -54,6 +54,12 @@ def save_report(folder_path,is_sub,create_nf,org_option):
                 category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
                 report[file.name] = f"{category} ({ext})"
     
+    elif org_option == "modified date":
+        for file in files:
+            if file.is_file():
+                mod_time = file.stat().st_mtime
+                mod_date = datetime.datetime.fromtimestamp(mod_time)
+                report[file.name] = f"{mod_date.year}-{mod_date.month:02d}-{mod_date.day:02d}"
 
     with open(save_path / "report.txt", "w") as f:
         f.write(f"Organized by: {org_option}\n")
