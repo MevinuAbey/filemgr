@@ -42,6 +42,8 @@ def save_path_fuc(folder_path,create_nf):
         save_path = folder_path
     return save_path
 
+def save_report(folder_path):
+
 def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
     if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
     elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
