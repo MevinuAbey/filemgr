@@ -23,13 +23,9 @@ def main(path):
 def menu():
     org_option = questionary.select("Organize Files in to folders according to:",
         choices=["file type","file extention","file type and file extention","modified date"]).ask()
-
     is_sub = questionary.confirm("also organize files in sub folders:").ask()
-
     is_com = questionary.select("move files when organizing or copy them:",choices=["copy","move",]).ask()
-
     create_nf = questionary.confirm("create new folder when organizing:").ask()
-
     return org_option,is_sub,is_com,create_nf
 
 def load_list_files(folder_path,is_sub):
@@ -127,34 +123,8 @@ def org_modified_date(folder_path,is_com,is_sub,create_nf):
     print(f"Files in '{folder_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
 
 file_types_ext = {
-    "Images": [
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".gif",
-        ".bmp",
-        ".webp",
-        ".ico",
-        ".svg",
-        ".tiff",
-        ".tif",
-    ],
-    "Documents": [
-        ".txt",
-        ".doc",
-        ".docx",
-        ".pdf",
-        ".rtf",
-        ".odt",
-        ".xls",
-        ".xlsx",
-        ".ppt",
-        ".pptx",
-        ".csv",
-        ".md",
-    ],
+    "Images": [".png",".jpg",".jpeg",".gif",".bmp",".webp",".ico",".svg",".tiff",".tif",],
+    "Documents": [".txt",".doc",".docx",".pdf",".rtf",".odt",".xls",".xlsx",".ppt",".pptx",".csv",".md",],
     "Video": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mpeg", ".mpg"],
     "Music": [".mp3", ".wav", ".aac", ".flac", ".ogg", ".m4a", ".wma"],
 }
-
-
