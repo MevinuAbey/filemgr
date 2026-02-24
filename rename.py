@@ -25,3 +25,5 @@ def menu():
         "Choose a renaming option:",
         choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
     return rename_option
+
+
