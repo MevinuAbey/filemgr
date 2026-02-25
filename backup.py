@@ -16,3 +16,11 @@ def main(path):
 def menu():
     #if there is backup config file show quick backup option
     #else show backup options
+    ...
+
+
+def Summary_report():
+    #generate summary report of backup process
+    #total files copied, skipped, failed
+    #log file with details of backup process
+    ...
