@@ -8,6 +8,7 @@
 #Skip Unchanged Files
 #File Type Exclusion
 #Preview Mode
+#Compression Mode
 
 def main(path):
     print(f"path to folder backup {path}")
