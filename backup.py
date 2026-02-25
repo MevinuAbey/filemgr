@@ -24,3 +24,10 @@ def Summary_report():
     #total files copied, skipped, failed
     #log file with details of backup process
     ...
+
+def backup_files():
+    #copy files from source to destination
+    #handle file type exclusion
+    #handle preview mode
+    #handle compression mode
+    ...
