@@ -14,7 +14,7 @@ def main(path):
     print(f"path to folder backup {path}")
 
 def menu():
-    #if there is backup config file show quick backup option
+    #if there is backup config file(backup_config.json) show quick backup option
     #else show backup options
     ...
 
