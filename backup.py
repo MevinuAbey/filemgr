@@ -9,7 +9,7 @@
 #File Type Exclusion
 #Preview Mode
 #Compression Mode
-
+#go
 def main(path):
     print(f"path to folder backup {path}")
 
