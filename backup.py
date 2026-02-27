@@ -18,6 +18,9 @@ def menu():
     #else show backup options
     ...
 
+def check_backup_config():
+    #check if backup_config.json exists and is valid
+    ...
 
 def Summary_report():
     #generate summary report of backup process
