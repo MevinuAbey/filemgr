@@ -33,18 +33,25 @@ def check_quick_backup():
         menu()
 
 def check_backup_config():
-#check if backup_config.json exists and is valid
-
-#checks
-    #destination must be path that exists
-    #is_timaestamp and is_compress must be boolean
-    #file_types_exclude and file_types_include must be list or "None"
+    #check if backup_config.json exists and is valid
+    #checks
+        #destination must be path that exists
+        #is_timaestamp and is_compress must be boolean
+        #file_types_exclude and file_types_include must be list or "None"
 
     try:
         with open("backup_config.json", "r") as f:
             config = json.load(f)
-            if "source" in config and "destination" in config and "is_timestamp" in config and "is_compress" in config and "file_types_exclude" in config and "file_types_include" in config:
-                return True
+            dest_path = Path(config["destination"])
+            if not dest_path.exists():
+                return False
+            if not isinstance(config["is_compress"], bool) or not isinstance(config["is_timestamp"], bool):
+                return False
+            if not (isinstance(config["file_types_exclude"], list) or config["file_types_exclude"] == "None"):
+                return False
+            if not (isinstance(config["file_types_include"], list) or config["file_types_include"] == "None"):
+                return False
+            return True
     except FileNotFoundError:
         return False
     except json.JSONDecodeError:
