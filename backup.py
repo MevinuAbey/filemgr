@@ -60,27 +60,35 @@ def check_backup_config():
 
 
 def menu():
-    backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
-    if not backup_dest:
-        backup_dest = str(Path.cwd() / "backup")
-    is_compress = questionary.confirm("Do you want to compress the backup?").ask()
-    is_timestamp = questionary.confirm("Do you want to create a timestamped backup?").ask()
+    #repaet untill user enterds valid backup_dest path
+    while True:
+        backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
+        if not backup_dest:
+            backup_dest = str(Path.cwd() / "backup")
+        dest_path = Path(backup_dest)
+        if dest_path.exists() and dest_path.is_dir():
+            break
+        else:
+            print("Invalid destination path. Please try again.")
+
+    is_compress = questionary.confirm("Do you want to compress the backup?").ask() #yes or no
+    is_timestamp = questionary.confirm("Do you want to create a timestamped backup?").ask() #yes or no
 
     exc_or_inc = questionary.select(
-        "Do you want to exclude or include specific file types?", choices=["Exclude", "Include", "None"]).ask()
+        "Do you want to exclude or include specific file types?", choices=["Exclude", "Include", "Include All"]).ask()
     if exc_or_inc == "Exclude":
         file_types_exclude = questionary.text(
             "Enter file types to exclude (comma separated, e.g., .tmp, .log):").ask()
         file_types_exclude = [ft.strip() for ft in file_types_exclude.split(",")] if file_types_exclude else []
-
     elif exc_or_inc == "Include":
         file_types_include = questionary.text(
             "Enter file types to include (comma separated, e.g., .txt, .doc):").ask()
         file_types_include = [ft.strip() for ft in file_types_include.split(",")] if file_types_include else []
   
+    
     save_backup_config(source=Path.cwd(), destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, is_timestamp=is_timestamp)
     #do_backup(backup_dest, is_compress, is_timestamp, file_types_exclude=file_types_exclude, file_types_include=file_types_include)
-    ...
+    return backup_dest, is_compress, is_timestamp, exc_or_inc, 
 
 def save_backup_config(source, destination, file_types_exclude, file_types_include, is_compress, is_timestamp):
     config = {
