@@ -19,8 +19,9 @@ import questionary # type: ignore
 
 def main(path):
     print(f"path to folder backup {path}")
+    check_quick_backup()
     backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include = menu(path)
-    save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, backup_mode=backup_mode)
+    save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
 
 
 def check_quick_backup():
@@ -29,10 +30,10 @@ def check_quick_backup():
         print("Quick Backup Available")
         quick_backup = questionary.confirm("Do you want to perform a quick backup using the last settings?").ask()
         if not quick_backup:
-            menu()
+            return
         #run backup with settings from backup_config.json
     else:
-        menu()
+        return
 
 def check_backup_config():
     #check if backup_config.json exists and is valid
@@ -47,11 +48,13 @@ def check_backup_config():
             dest_path = Path(config["destination"])
             if not dest_path.exists():
                 return False
-            if not isinstance(config["is_compress"], bool) or not isinstance(config["is_timestamp"], bool):
+            if not isinstance(config["is_compress"], bool):
                 return False
             if not (isinstance(config["file_types_exclude"], list) or config["file_types_exclude"] == "None"):
                 return False
             if not (isinstance(config["file_types_include"], list) or config["file_types_include"] == "None"):
+                return False
+            if not isinstance(config["backup_mode"],str) or not (config["backup_mode"] == "timestamp" or config["backup_mode"] == "overwrite"):
                 return False
             return True
     except FileNotFoundError:
