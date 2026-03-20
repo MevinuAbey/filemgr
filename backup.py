@@ -19,7 +19,7 @@ import questionary # type: ignore
 
 def main(path):
     print(f"path to folder backup {path}")
-    menu()
+    menu(path)
 
 def check_quick_backup():
 #ckeck if check_backup_config is true and then run backup by its setings
@@ -59,12 +59,12 @@ def check_backup_config():
         return False
 
 
-def menu():
+def menu(path):
     #repaet untill user enterds valid backup_dest path
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
-            backup_dest = str(Path.cwd() / "backup")
+            backup_dest = path
         dest_path = Path(backup_dest)
         if dest_path.exists() and dest_path.is_dir():
             break
