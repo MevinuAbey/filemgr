@@ -21,7 +21,7 @@ def main(path):
     print(f"path to folder backup {path}")
     check_quick_backup()
     backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include = menu(path)
-    save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
+    save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
 
 
 def check_quick_backup():
@@ -56,6 +56,8 @@ def check_backup_config():
                 return False
             if not isinstance(config["backup_mode"],str) or not (config["backup_mode"] == "timestamp" or config["backup_mode"] == "overwrite"):
                 return False
+            if not isinstance(config["exc_or_inc"],str) or not (config["exc_or_inc"]== "Exclude" or config["exc_or_inc"]== "Include" or config["exc_or_inc"] == "Include All"):
+                return False
             return True
     except FileNotFoundError:
         return False
@@ -89,13 +91,15 @@ def menu(path):
             "Enter file types to include (comma separated, e.g., .txt, .doc):").ask()
         file_types_include = [ft.strip() for ft in file_types_include.split(",")] if file_types_include else []
   
-    return backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include if exc_or_inc == "Include" else "None"
-    #save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, backup_mode=backup_mode)
+    return (backup_dest, is_compress, backup_mode, exc_or_inc,
+             file_types_exclude if exc_or_inc == "Exclude" else "None",
+               file_types_include if exc_or_inc == "Include" else "None")
 
-def save_backup_config(source, destination, file_types_exclude, file_types_include, is_compress, backup_mode):
+def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file_types_include, is_compress, backup_mode):
     config = {
         "source": str(source),
         "destination": str(destination),
+        "exc_or_inc": exc_or_inc,
         "file_types_exclude": file_types_exclude,
         "file_types_include": file_types_include,
         "is_compress": is_compress,
