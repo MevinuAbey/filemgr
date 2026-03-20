@@ -19,7 +19,9 @@ import questionary # type: ignore
 
 def main(path):
     print(f"path to folder backup {path}")
-    menu(path)
+    backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include = menu(path)
+    save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, backup_mode=backup_mode)
+
 
 def check_quick_backup():
 #ckeck if check_backup_config is true and then run backup by its setings
@@ -58,9 +60,7 @@ def check_backup_config():
         print("Invalid JSON in backup_config.json.")
         return False
 
-
 def menu(path):
-    #repaet untill user enterds valid backup_dest path
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
@@ -72,7 +72,8 @@ def menu(path):
             print("Invalid destination path. Please try again.")
 
     is_compress = questionary.confirm("Do you want to compress the backup?").ask() #yes or no
-    is_timestamp = questionary.confirm("Do you want to create a timestamped backup?").ask() #yes or no
+    backup_mode = questionary.select(
+        "Do you want to create a timestamped backup or overwriting backup?", choices=["timestamp", "overwrite"]).ask()
 
     exc_or_inc = questionary.select(
         "Do you want to exclude or include specific file types?", choices=["Exclude", "Include", "Include All"]).ask()
@@ -85,19 +86,17 @@ def menu(path):
             "Enter file types to include (comma separated, e.g., .txt, .doc):").ask()
         file_types_include = [ft.strip() for ft in file_types_include.split(",")] if file_types_include else []
   
-    
-    save_backup_config(source=Path.cwd(), destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, is_timestamp=is_timestamp)
-    #do_backup(backup_dest, is_compress, is_timestamp, file_types_exclude=file_types_exclude, file_types_include=file_types_include)
-    return backup_dest, is_compress, is_timestamp, exc_or_inc, 
+    return backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include if exc_or_inc == "Include" else "None"
+    #save_backup_config(source=path, destination=backup_dest, file_types_exclude=file_types_exclude if exc_or_inc == "Exclude" else "None", file_types_include=file_types_include if exc_or_inc == "Include" else "None", is_compress=is_compress, backup_mode=backup_mode)
 
-def save_backup_config(source, destination, file_types_exclude, file_types_include, is_compress, is_timestamp):
+def save_backup_config(source, destination, file_types_exclude, file_types_include, is_compress, backup_mode):
     config = {
         "source": str(source),
-        "destination": destination,
+        "destination": str(destination),
         "file_types_exclude": file_types_exclude,
         "file_types_include": file_types_include,
         "is_compress": is_compress,
-        "is_timestamp": is_timestamp
+        "backup_mode": backup_mode,
     }
     with open("backup_config.json", "w") as f:
         json.dump(config, f, indent=4)
