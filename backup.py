@@ -81,7 +81,9 @@ def menu(path):
         "Do you want to create a timestamped backup or overwriting backup?", choices=["timestamp", "overwrite"]).ask()
 
     exc_or_inc = questionary.select(
-        "Do you want to exclude or include specific file types?", choices=["Exclude", "Include", "Include All"]).ask()
+        "Do you want to exclude or include specific file types?", choices=["Include All", "Exclude", "Include"]).ask()
+    file_types_exclude = []
+    file_types_include = []
     if exc_or_inc == "Exclude":
         file_types_exclude = questionary.text(
             "Enter file types to exclude (comma separated, e.g., .tmp, .log):").ask()
@@ -91,9 +93,11 @@ def menu(path):
             "Enter file types to include (comma separated, e.g., .txt, .doc):").ask()
         file_types_include = [ft.strip() for ft in file_types_include.split(",")] if file_types_include else []
   
-    return (backup_dest, is_compress, backup_mode, exc_or_inc,
-             file_types_exclude if exc_or_inc == "Exclude" else "None",
-               file_types_include if exc_or_inc == "Include" else "None")
+    if not file_types_exclude and not file_types_include:
+        exc_or_inc = "Include All"
+
+    return (backup_dest, is_compress, backup_mode,
+             exc_or_inc, file_types_exclude, file_types_include)
 
 def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file_types_include, is_compress, backup_mode):
     config = {
