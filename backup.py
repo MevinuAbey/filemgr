@@ -76,12 +76,13 @@ def menu(path):
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
-            backup_dest = path
+            backup_dest = Path(f"{path}/backup")
         dest_path = Path(backup_dest)
         if dest_path.exists() and dest_path.is_dir():
             break
         else:
-            print("Invalid destination path. Please try again.")
+            backup_dest.mkdir(parents=True, exist_ok=True)
+            break
 
     is_compress = questionary.confirm("Do you want to compress the backup?").ask() #yes or no
     backup_mode = questionary.select(
@@ -116,7 +117,7 @@ def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file
         "is_compress": is_compress,
         "backup_mode": backup_mode,
     }
-    with open("backup_config.json", "w") as f:
+    with open(f"{source}/backup_config.json", "w") as f:
         json.dump(config, f, indent=4)
 
 def Load_backup_config(): #to quick backup
@@ -127,6 +128,9 @@ def backup(backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude
     #handle file type exclusion
     #handle preview mode
     #handle compression mode
+    print("Starting backup...")
+    print(backup_dest)
+
     ...
 
 def Summary_report():
