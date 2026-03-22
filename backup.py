@@ -11,7 +11,7 @@
 #file type exclusion list
 #is compression mode or normal copy
 #is it timestamp backup or normal backup
-
+import sys
 import json
 import shutil
 from pathlib import Path
@@ -21,8 +21,15 @@ def main(path):
     print(f"path to folder backup {path}")
     check_quick_backup()
     backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include = menu(path)
+    #confirmation if backup
+    confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
+    if not confirm_backup:
+        print("backup cancelled.")
+        sys.exit(0)
+    backup(backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include) #run backup with settings from menu
+    #saving confing
     save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
-
+    print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
 
 def check_quick_backup():
 #ckeck if check_backup_config is true and then run backup by its setings
@@ -50,9 +57,9 @@ def check_backup_config():
                 return False
             if not isinstance(config["is_compress"], bool):
                 return False
-            if not (isinstance(config["file_types_exclude"], list) or config["file_types_exclude"] == "None"):
+            if not (isinstance(config["file_types_exclude"], list)):
                 return False
-            if not (isinstance(config["file_types_include"], list) or config["file_types_include"] == "None"):
+            if not (isinstance(config["file_types_include"], list)):
                 return False
             if not isinstance(config["backup_mode"],str) or not (config["backup_mode"] == "timestamp" or config["backup_mode"] == "overwrite"):
                 return False
@@ -112,16 +119,18 @@ def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file
     with open("backup_config.json", "w") as f:
         json.dump(config, f, indent=4)
 
+def Load_backup_config(): #to quick backup
+    ...
+
+def backup(backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include):
+    #copy files from source to destination
+    #handle file type exclusion
+    #handle preview mode
+    #handle compression mode
+    ...
 
 def Summary_report():
     #generate summary report of backup process
     #total files copied, skipped, failed
     #log file with details of backup process
-    ...
-
-def backup_files():
-    #copy files from source to destination
-    #handle file type exclusion
-    #handle preview mode
-    #handle compression mode
     ...
