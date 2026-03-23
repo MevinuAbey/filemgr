@@ -16,6 +16,7 @@ import json
 import shutil
 from pathlib import Path
 import questionary # type: ignore
+import datetime
 
 def main(path):
     print(f"path to folder backup {path}")
@@ -26,7 +27,7 @@ def main(path):
     if not confirm_backup:
         print("backup cancelled.")
         sys.exit(0)
-    backup(backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include) #run backup with settings from menu
+    backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include) #run backup with settings from menu
     #saving confing
     save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
     print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
@@ -123,15 +124,40 @@ def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file
 def Load_backup_config(): #to quick backup
     ...
 
-def backup(backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include):
+def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include):
     #copy files from source to destination
     #handle file type exclusion
     #handle preview mode
     #handle compression mode
     print("Starting backup...")
-    print(backup_dest)
 
-    ...
+    def zip_it_timestamp():
+        #handle compression and file copying with exclusion/inclusion
+        if is_compress:
+            #create a zip with
+            if exc_or_inc == "Exclude":
+                #zip with exclusion
+                ...
+            ...
+        else:
+            ...
+
+    def zip_it_overwrite():
+        #handle compression and file copying with exclusion/inclusion
+        if is_compress:
+            #create a zip with 
+            ...
+        else:
+            ...
+
+    #backup mode -> filename, time or overwrite fucn 
+    if backup_mode == "timestamp":
+        timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
+        backup_name = (f"{path.name}_backup_{timestamp}")
+    elif backup_mode == "overwrite":
+        backup_name = (f"{path.name}_backup")
+
+
 
 def Summary_report():
     #generate summary report of backup process
