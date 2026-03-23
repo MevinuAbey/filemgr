@@ -121,11 +121,7 @@ def save_backup_config(source, destination, exc_or_inc, file_types, is_compress,
 def Load_backup_config(): #to quick backup
     ...
 
-def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include):
-    #copy files from source to destination
-    #handle file type exclusion
-    #handle preview mode
-    #handle compression mode
+def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     print("Starting backup...")
 
     #backup mode -> filename, time or overwrite fucn 
@@ -137,16 +133,16 @@ def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_e
         backup_name = (f"{path.name}_backup")
 
 
-def zip_it(source_folder, zip_name, exc_or_inc, extensions=None):
-
+def zip_it(source_folder, zip_name, exc_or_inc, file_types=None):
     def should_include(file_name):
-        if exc_or_inc == "all":
+        if exc_or_inc == "Include All":
             return True
+        
         file_name = file_name.lower()
-        if exc_or_inc == "include":
-            return file_name.endswith(extensions)
-        if exc_or_inc == "exclude":
-            return not file_name.endswith(extensions)
+        if exc_or_inc == "Include":
+            return file_name.endswith(file_types)
+        if exc_or_inc == "Exclude":
+            return not file_name.endswith(file_types)
         
         return True
 
