@@ -34,11 +34,6 @@ def check_quick_backup(source_path):
         return
 
 def check_backup_config(source_path):
-    #check if backup_config.json exists and is valid
-    #checks
-        #destination must be path that exists
-        #is_timaestamp and is_compress must be boolean
-        #file_types_exclude and file_types_include must be list or "None"
 
     try:
         with open(f"{source_path}/backup_config.json", "r") as f:
@@ -60,6 +55,11 @@ def check_backup_config(source_path):
     except json.JSONDecodeError:
         print("Invalid JSON in backup_config.json.")
         return False
+
+def quick_backup(source_path):
+    with open(f"{source_path}/backup_config.json", "r") as f:
+        config = json.load(f)
+    backup(source_path, config["destination"], config["is_compress"], config["backup_mode"], config["exc_or_inc"], config["file_types"])
 
 def menu(source_path):
     while True:
@@ -105,9 +105,6 @@ def save_backup_config(source, destination, exc_or_inc, file_types, is_compress,
     }
     with open(f"{source}/backup_config.json", "w") as f:
         json.dump(config, f, indent=4)
-
-def Load_backup_config(): #to quick backup
-    ...
 
 def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     print("Starting backup...")
