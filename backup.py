@@ -128,12 +128,16 @@ def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     if backup_mode == "timestamp":
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
         backup_name = (f"{path.name}_backup_{timestamp}")
+        if is_compress:
+            zip_it(path,backup_name,exc_or_inc,file_types)
 
     elif backup_mode == "overwrite":
         backup_name = (f"{path.name}_backup")
+        if is_compress:
+            zip_it(path,backup_name,exc_or_inc,file_types)
 
 
-def zip_it(source_folder, zip_name, exc_or_inc, file_types=None):
+def zip_it(path, backup_name, exc_or_inc, file_types=None):
 
     def include(file_name):
         if exc_or_inc == "Include All":
@@ -146,12 +150,12 @@ def zip_it(source_folder, zip_name, exc_or_inc, file_types=None):
             return not file_name.endswith(file_types)
         return True
 
-    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(source_folder):
+    with zipfile.ZipFile(backup_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(path):
             for file in files:
                 full_path = os.path.join(root, file)
                 if include(file):
-                    rel_path = os.path.relpath(full_path, source_folder)
+                    rel_path = os.path.relpath(full_path, path)
                     zipf.write(full_path, rel_path)
 
 def Summary_report():
