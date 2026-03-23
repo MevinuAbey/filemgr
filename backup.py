@@ -23,7 +23,7 @@ import os
 def main(path):
     source_path = path
     print(f"path to folder backup {source_path}")
-    check_quick_backup()
+    check_quick_backup(source_path)
     backup_dest, is_compress, backup_mode, exc_or_inc, file_types = menu(source_path)
     #confirmation if backup
     confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
@@ -128,12 +128,12 @@ def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_
     #backup mode -> filename, time or overwrite fucn 
     if backup_mode == "timestamp":
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
-        backup_name = (f"{source_path.name}_backup_{timestamp}")
+        backup_name = (f"{source_path.name}_backup_{timestamp}.zip")
         if is_compress:
             zip_it(source_path,backup_name,exc_or_inc,file_types)
 
     elif backup_mode == "overwrite":
-        backup_name = (f"{source_path.name}_backup")
+        backup_name = (f"{source_path.name}_backup.zip")
         if is_compress:
             zip_it(source_path,backup_name,exc_or_inc,file_types)
 
