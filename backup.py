@@ -1,16 +1,3 @@
-#Select Source Folder
-#Select Destination Folder
-#Timestamped Backup Folder
-#Copy All Files and Subfolders (Recursive)
-#Summary Report
-
-#File Type Exclusion
-
-#settings saved in backup_config.json
-#source folder and destination folder
-#file type exclusion list
-#is compression mode or normal copy
-#is it timestamp backup or normal backup
 import sys
 import json
 import shutil
@@ -131,16 +118,20 @@ def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_
         backup_name = (f"{source_path.name}_backup_{timestamp}.zip")
         if is_compress:
             backup_name = f"{backup_dest}/{backup_name}"
-            zip_it(source_path,backup_name,exc_or_inc,file_types)
+            zip_backup_it(source_path,backup_name,exc_or_inc,file_types)
+        else:
+            ...
 
     elif backup_mode == "overwrite":
         backup_name = (f"{source_path.name}_backup.zip")
         if is_compress:
             backup_name = f"{backup_dest}/{backup_name}"
-            zip_it(source_path,backup_name,exc_or_inc,file_types)
+            zip_backup_it(source_path,backup_name,exc_or_inc,file_types)
+        else:
+            ...
 
 
-def zip_it(source_path, backup_name, exc_or_inc, file_types=None):
+def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
 
     def include(file_name):
         if exc_or_inc == "Include All":
@@ -163,8 +154,5 @@ def zip_it(source_path, backup_name, exc_or_inc, file_types=None):
                     rel_path = os.path.relpath(full_path, source_path)
                     zipf.write(full_path, rel_path)
 
-def Summary_report():
-    #generate summary report of backup process
-    #total files copied, skipped, failed
-    #log file with details of backup process
+def normal_backup_it():
     ...
