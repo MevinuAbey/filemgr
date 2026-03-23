@@ -115,21 +115,22 @@ def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_
     #backup mode -> filename, time or overwrite fucn 
     if backup_mode == "timestamp":
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
-        backup_name = (f"{source_path.name}_backup_{timestamp}.zip")
+        backup_name = (f"{source_path.name}_backup_{timestamp}")
         if is_compress:
-            backup_name = f"{backup_dest}/{backup_name}"
+            backup_name = f"{backup_dest}/{backup_name}.zip"
             zip_backup_it(source_path,backup_name,exc_or_inc,file_types)
         else:
-            ...
+            backup_name = f"{backup_dest}/{backup_name}"
+            normal_backup_it(source_path, backup_name, exc_or_inc, file_types)
 
     elif backup_mode == "overwrite":
-        backup_name = (f"{source_path.name}_backup.zip")
+        backup_name = (f"{source_path.name}_backup")
         if is_compress:
-            backup_name = f"{backup_dest}/{backup_name}"
+            backup_name = f"{backup_dest}/{backup_name}.zip"
             zip_backup_it(source_path,backup_name,exc_or_inc,file_types)
         else:
-            ...
-
+            backup_name = f"{backup_dest}/{backup_name}"
+            normal_backup_it(source_path, backup_name, exc_or_inc, file_types)
 
 def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
 
@@ -154,5 +155,35 @@ def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
                     rel_path = os.path.relpath(full_path, source_path)
                     zipf.write(full_path, rel_path)
 
-def normal_backup_it():
-    ...
+def normal_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
+    def include(file_name):
+        if exc_or_inc == "Include All":
+            return True
+        
+        file_name = file_name.lower()
+
+        if exc_or_inc == "Include":
+            return file_name.endswith(file_types)
+        
+        if exc_or_inc == "Exclude":
+            return not file_name.endswith(file_types)
+        return True
+    
+    for root, dirs, files in os.walk(source_path):
+        for file in files:
+            
+            full_path = os.path.join(root, file)
+
+            if include(file):
+                
+                # Create relative path
+                rel_path = os.path.relpath(full_path, source_path)
+                
+                # Destination path
+                dest_path = os.path.join(backup_name, rel_path)
+                
+                # Ensure destination folder exists
+                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                
+                # Copy file
+                shutil.copy2(full_path, dest_path)
