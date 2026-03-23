@@ -21,22 +21,23 @@ import zipfile
 import os
 
 def main(path):
-    print(f"path to folder backup {path}")
+    source_path = path
+    print(f"path to folder backup {source_path}")
     check_quick_backup()
-    backup_dest, is_compress, backup_mode, exc_or_inc, file_types = menu(path)
+    backup_dest, is_compress, backup_mode, exc_or_inc, file_types = menu(source_path)
     #confirmation if backup
     confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
     if not confirm_backup:
         print("backup cancelled.")
         sys.exit(0)
-    backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types) #run backup with settings from menu
+    backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types) #run backup with settings from menu
     #saving confing
-    save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types=file_types, is_compress=is_compress, backup_mode=backup_mode)
+    save_backup_config(source=source_path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types=file_types, is_compress=is_compress, backup_mode=backup_mode)
     print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
 
-def check_quick_backup():
+def check_quick_backup(source_path):
 #ckeck if check_backup_config is true and then run backup by its setings
-    if check_backup_config():
+    if check_backup_config(source_path):
         print("Quick Backup Available")
         quick_backup = questionary.confirm("Do you want to perform a quick backup using the last settings?").ask()
         if not quick_backup:
@@ -45,7 +46,7 @@ def check_quick_backup():
     else:
         return
 
-def check_backup_config():
+def check_backup_config(source_path):
     #check if backup_config.json exists and is valid
     #checks
         #destination must be path that exists
@@ -53,7 +54,7 @@ def check_backup_config():
         #file_types_exclude and file_types_include must be list or "None"
 
     try:
-        with open("backup_config.json", "r") as f:
+        with open(f"{source_path}/backup_config.json", "r") as f:
             config = json.load(f)
             dest_path = Path(config["destination"])
             if not dest_path.exists():
@@ -73,11 +74,11 @@ def check_backup_config():
         print("Invalid JSON in backup_config.json.")
         return False
 
-def menu(path):
+def menu(source_path):
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
-            backup_dest = Path(f"{path}/backup")
+            backup_dest = Path(f"{source_path}/backup")
         dest_path = Path(backup_dest)
         if dest_path.exists() and dest_path.is_dir():
             break
@@ -121,23 +122,23 @@ def save_backup_config(source, destination, exc_or_inc, file_types, is_compress,
 def Load_backup_config(): #to quick backup
     ...
 
-def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
+def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     print("Starting backup...")
 
     #backup mode -> filename, time or overwrite fucn 
     if backup_mode == "timestamp":
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
-        backup_name = (f"{path.name}_backup_{timestamp}")
+        backup_name = (f"{source_path.name}_backup_{timestamp}")
         if is_compress:
-            zip_it(path,backup_name,exc_or_inc,file_types)
+            zip_it(source_path,backup_name,exc_or_inc,file_types)
 
     elif backup_mode == "overwrite":
-        backup_name = (f"{path.name}_backup")
+        backup_name = (f"{source_path.name}_backup")
         if is_compress:
-            zip_it(path,backup_name,exc_or_inc,file_types)
+            zip_it(source_path,backup_name,exc_or_inc,file_types)
 
 
-def zip_it(path, backup_name, exc_or_inc, file_types=None):
+def zip_it(source_path, backup_name, exc_or_inc, file_types=None):
 
     def include(file_name):
         if exc_or_inc == "Include All":
@@ -151,11 +152,11 @@ def zip_it(path, backup_name, exc_or_inc, file_types=None):
         return True
 
     with zipfile.ZipFile(backup_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(source_path):
             for file in files:
                 full_path = os.path.join(root, file)
                 if include(file):
-                    rel_path = os.path.relpath(full_path, path)
+                    rel_path = os.path.relpath(full_path, source_path)
                     zipf.write(full_path, rel_path)
 
 def Summary_report():
