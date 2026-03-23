@@ -134,7 +134,8 @@ def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
 
 
 def zip_it(source_folder, zip_name, exc_or_inc, file_types=None):
-    def should_include(file_name):
+
+    def include(file_name):
         if exc_or_inc == "Include All":
             return True
         
@@ -143,14 +144,13 @@ def zip_it(source_folder, zip_name, exc_or_inc, file_types=None):
             return file_name.endswith(file_types)
         if exc_or_inc == "Exclude":
             return not file_name.endswith(file_types)
-        
         return True
 
     with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(source_folder):
             for file in files:
                 full_path = os.path.join(root, file)
-                if should_include(file):
+                if include(file):
                     rel_path = os.path.relpath(full_path, source_folder)
                     zipf.write(full_path, rel_path)
 
