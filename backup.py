@@ -17,19 +17,21 @@ import shutil
 from pathlib import Path
 import questionary # type: ignore
 import datetime
+import zipfile
+import os
 
 def main(path):
     print(f"path to folder backup {path}")
     check_quick_backup()
-    backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include = menu(path)
+    backup_dest, is_compress, backup_mode, exc_or_inc, file_types = menu(path)
     #confirmation if backup
     confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
     if not confirm_backup:
         print("backup cancelled.")
         sys.exit(0)
-    backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_exclude, file_types_include) #run backup with settings from menu
+    backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types) #run backup with settings from menu
     #saving confing
-    save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types_exclude=file_types_exclude, file_types_include=file_types_include, is_compress=is_compress, backup_mode=backup_mode)
+    save_backup_config(source=path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types=file_types, is_compress=is_compress, backup_mode=backup_mode)
     print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
 
 def check_quick_backup():
@@ -58,9 +60,7 @@ def check_backup_config():
                 return False
             if not isinstance(config["is_compress"], bool):
                 return False
-            if not (isinstance(config["file_types_exclude"], list)):
-                return False
-            if not (isinstance(config["file_types_include"], list)):
+            if not (isinstance(config["file_types"], list)):
                 return False
             if not isinstance(config["backup_mode"],str) or not (config["backup_mode"] == "timestamp" or config["backup_mode"] == "overwrite"):
                 return False
@@ -91,30 +91,27 @@ def menu(path):
 
     exc_or_inc = questionary.select(
         "Do you want to exclude or include specific file types?", choices=["Include All", "Exclude", "Include"]).ask()
-    file_types_exclude = []
-    file_types_include = []
-    if exc_or_inc == "Exclude":
-        file_types_exclude = questionary.text(
-            "Enter file types to exclude (comma separated, e.g., .tmp, .log):").ask()
-        file_types_exclude = [ft.strip() for ft in file_types_exclude.split(",")] if file_types_exclude else []
-    elif exc_or_inc == "Include":
-        file_types_include = questionary.text(
-            "Enter file types to include (comma separated, e.g., .txt, .doc):").ask()
-        file_types_include = [ft.strip() for ft in file_types_include.split(",")] if file_types_include else []
+    file_types = []
+
+    if exc_or_inc == "Exclude" or exc_or_inc == "Include":
+        file_types = questionary.text(
+            f"Enter file types to {exc_or_inc} (comma separated, e.g., .tmp, .log):").ask()
+        file_types = [ft.strip() for ft in file_types.split(",")] if file_types else []
+
+
   
-    if not file_types_exclude and not file_types_include:
+    if not file_types:
         exc_or_inc = "Include All"
 
     return (backup_dest, is_compress, backup_mode,
-             exc_or_inc, file_types_exclude, file_types_include)
+             exc_or_inc, file_types)
 
-def save_backup_config(source, destination, exc_or_inc, file_types_exclude, file_types_include, is_compress, backup_mode):
+def save_backup_config(source, destination, exc_or_inc, file_types, is_compress, backup_mode):
     config = {
         "source": str(source),
         "destination": str(destination),
         "exc_or_inc": exc_or_inc,
-        "file_types_exclude": file_types_exclude,
-        "file_types_include": file_types_include,
+        "file_types": file_types,
         "is_compress": is_compress,
         "backup_mode": backup_mode,
     }
@@ -131,33 +128,35 @@ def backup(path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types_e
     #handle compression mode
     print("Starting backup...")
 
-    def zip_it_timestamp():
-        #handle compression and file copying with exclusion/inclusion
-        if is_compress:
-            #create a zip with
-            if exc_or_inc == "Exclude":
-                #zip with exclusion
-                ...
-            ...
-        else:
-            ...
-
-    def zip_it_overwrite():
-        #handle compression and file copying with exclusion/inclusion
-        if is_compress:
-            #create a zip with 
-            ...
-        else:
-            ...
-
     #backup mode -> filename, time or overwrite fucn 
     if backup_mode == "timestamp":
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
         backup_name = (f"{path.name}_backup_{timestamp}")
+
     elif backup_mode == "overwrite":
         backup_name = (f"{path.name}_backup")
 
 
+def zip_it(source_folder, zip_name, exc_or_inc, extensions=None):
+
+    def should_include(file_name):
+        if exc_or_inc == "all":
+            return True
+        file_name = file_name.lower()
+        if exc_or_inc == "include":
+            return file_name.endswith(extensions)
+        if exc_or_inc == "exclude":
+            return not file_name.endswith(extensions)
+        
+        return True
+
+    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(source_folder):
+            for file in files:
+                full_path = os.path.join(root, file)
+                if should_include(file):
+                    rel_path = os.path.relpath(full_path, source_folder)
+                    zipf.write(full_path, rel_path)
 
 def Summary_report():
     #generate summary report of backup process
