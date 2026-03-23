@@ -78,7 +78,7 @@ def menu(source_path):
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
-            backup_dest = Path(f"{source_path}/backup")
+            backup_dest = Path(f"C:/backup_files_filemgr/{source_path.name}_backup")
         dest_path = Path(backup_dest)
         if dest_path.exists() and dest_path.is_dir():
             break
@@ -130,11 +130,13 @@ def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_
         timestamp = datetime.datetime.now().strftime("%Y%M%d_%H%M%S")
         backup_name = (f"{source_path.name}_backup_{timestamp}.zip")
         if is_compress:
+            backup_name = f"{backup_dest}/{backup_name}"
             zip_it(source_path,backup_name,exc_or_inc,file_types)
 
     elif backup_mode == "overwrite":
         backup_name = (f"{source_path.name}_backup.zip")
         if is_compress:
+            backup_name = f"{backup_dest}/{backup_name}"
             zip_it(source_path,backup_name,exc_or_inc,file_types)
 
 
@@ -145,8 +147,10 @@ def zip_it(source_path, backup_name, exc_or_inc, file_types=None):
             return True
         
         file_name = file_name.lower()
+
         if exc_or_inc == "Include":
             return file_name.endswith(file_types)
+        
         if exc_or_inc == "Exclude":
             return not file_name.endswith(file_types)
         return True
