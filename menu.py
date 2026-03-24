@@ -8,14 +8,13 @@ import rename
 def main(action, source_path):
     if action == "backup":
         backup_dest, is_compress, backup_mode, exc_or_inc, file_types = backup_menu(source_path)
+        print(f"path to folder backup {source_path}")
         #confirmation if backup
         confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
         if not confirm_backup:
             print("backup cancelled.")
             sys.exit(0)
-        backup.backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types) #run backup with settings from menu
         #saving confing
-        backup.save_backup_config(source=source_path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types=file_types, is_compress=is_compress, backup_mode=backup_mode)
         print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
 
     elif action == "organize":

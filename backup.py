@@ -8,13 +8,8 @@ import zipfile
 import os
 
 def main(source_path,backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
-    print(f"path to folder backup {source_path}")
     check_quick_backup(source_path)
     #confirmation if backup
-    confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
-    if not confirm_backup:
-        print("backup cancelled.")
-        sys.exit(0)
     backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types) #run backup with settings from menu
     #saving confing
     save_backup_config(source=source_path, destination=backup_dest,exc_or_inc=exc_or_inc, file_types=file_types, is_compress=is_compress, backup_mode=backup_mode)
