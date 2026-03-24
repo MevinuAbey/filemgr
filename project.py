@@ -30,10 +30,10 @@ def main():
 
 
 def check_path():
-    if Path.exists(source_path) or Path.is_dir(source_path):  # cheking if path is avalable
+    if Path.exists(source_path) or Path.is_dir(source_path):  # cheking if path is available
         return True
     else:
-        print("Path You Entered Is not exsisting :)")
+        print("Path You Entered Is not existing :)")
         sys.exit(1)
 
 
