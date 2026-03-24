@@ -4,15 +4,9 @@ from pathlib import Path
 import re
 import json
 
-def main(path):
+def main(path, rename_option):
     folder_path = Path(path)
-    rename_option = menu()
     do_rename(rename_option, folder_path)
-
-def menu():
-    rename_option = questionary.select(
-        "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
-    return rename_option
 
 def load_list_files(folder_path):
     files = folder_path.iterdir()

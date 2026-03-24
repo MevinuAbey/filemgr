@@ -4,36 +4,26 @@ import questionary # type: ignore
 from pathlib import Path
 import shutil
 
-def main(path):
-    folder_path = Path(path)
-    org_option, is_sub, is_com,create_nf = menu() #is_sub-yes,no #is_com-copy,move
-    do_organize(org_option,is_sub,is_com,folder_path,create_nf)
+def main(source_path,org_option, is_sub, is_com,create_nf):
+    do_organize(org_option,is_sub,is_com,source_path,create_nf)
 
-def menu():
-    org_option = questionary.select("Organize Files in to folders according to:",
-        choices=["file type","file extention","file type and file extention","modified date"]).ask()
-    is_sub = questionary.confirm("also organize files in sub folders:").ask()
-    is_com = questionary.select("move files when organizing or copy them:",choices=["copy","move",]).ask()
-    create_nf = questionary.confirm("create new folder when organizing:").ask()
-    return org_option,is_sub,is_com,create_nf
-
-def load_list_files(folder_path,is_sub):
+def load_list_files(source_path,is_sub):
     #if user organizing files in subfolders using "rglog" otherwise using "iterdir" for listing files
-    files = folder_path.rglob("*") if is_sub else folder_path.iterdir()
+    files = source_path.rglob("*") if is_sub else source_path.iterdir()
     return files
 
-def save_path_fuc(folder_path,create_nf):     
+def save_path_fuc(source_path,create_nf):     
     #if user choosed make diffrent foldr for organized files make it
     if create_nf :
-        save_path = folder_path / "organized"
+        save_path = source_path / "organized"
         save_path.mkdir(exist_ok=True)
     else:
-        save_path = folder_path
+        save_path = source_path
     return save_path
 
-def save_report(folder_path,is_sub,create_nf,org_option): #needs improvements
-    files = load_list_files(folder_path,is_sub)
-    save_path = save_path_fuc(folder_path,create_nf)
+def save_report(source_path,is_sub,create_nf,org_option): #needs improvements
+    files = load_list_files(source_path,is_sub)
+    save_path = save_path_fuc(source_path,create_nf)
     report = {}
     if org_option == "file type":
         for file in files:
@@ -67,17 +57,17 @@ def save_report(folder_path,is_sub,create_nf,org_option): #needs improvements
         for file_name, category in report.items():
             f.write(f"{file_name} -> {category}\n")
 
-def do_organize(org_option,is_sub,is_com,folder_path,create_nf):
-    if org_option == "file type": org_file_type(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "file extention": org_file_ext(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "file type and file extention": org_file_type_ext(folder_path,is_com,is_sub,create_nf)
-    elif org_option == "modified date": org_modified_date(folder_path,is_com,is_sub,create_nf)
-    save_report(folder_path,is_sub,create_nf,org_option)
+def do_organize(org_option,is_sub,is_com,source_path,create_nf):
+    if org_option == "file type": org_file_type(source_path,is_com,is_sub,create_nf)
+    elif org_option == "file extention": org_file_ext(source_path,is_com,is_sub,create_nf)
+    elif org_option == "file type and file extention": org_file_type_ext(source_path,is_com,is_sub,create_nf)
+    elif org_option == "modified date": org_modified_date(source_path,is_com,is_sub,create_nf)
+    save_report(source_path,is_sub,create_nf,org_option)
 
-def org_file_type(folder_path,is_com,is_sub,create_nf):
+def org_file_type(source_path,is_com,is_sub,create_nf):
     
-    files = load_list_files(folder_path,is_sub)
-    save_path = save_path_fuc(folder_path,create_nf)
+    files = load_list_files(source_path,is_sub)
+    save_path = save_path_fuc(source_path,create_nf)
 
     # Skiping the catagorized folders we'll create
     category_dirs = [save_path / cat for cat in file_types_ext.keys()] #getting file types from file_types_ext
@@ -95,9 +85,9 @@ def org_file_type(folder_path,is_com,is_sub,create_nf):
             else:
                 shutil.copy2(str(file), str(dest_folder / file.name))
 
-def org_file_ext(folder_path,is_com,is_sub,create_nf):
-    files = load_list_files(folder_path,is_sub)
-    save_path = save_path_fuc(folder_path,create_nf)
+def org_file_ext(source_path,is_com,is_sub,create_nf):
+    files = load_list_files(source_path,is_sub)
+    save_path = save_path_fuc(source_path,create_nf)
 
     for file in files: #for each file in the folder or subforlder if user chooses
         if file.is_file(): #cheks if its a file
@@ -110,11 +100,11 @@ def org_file_ext(folder_path,is_com,is_sub,create_nf):
                     shutil.move(str(file), str(dest_folder / file.name))
                 else:
                     shutil.copy2(str(file), str(dest_folder / file.name))
-    print(f"Files in '{folder_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
+    print(f"Files in '{source_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
 
-def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
-    files = load_list_files(folder_path,is_sub)
-    save_path = save_path_fuc(folder_path,create_nf)
+def org_file_type_ext(source_path,is_com,is_sub,create_nf):
+    files = load_list_files(source_path,is_sub)
+    save_path = save_path_fuc(source_path,create_nf)
 
     for file in files:
         if file.is_file():
@@ -128,11 +118,11 @@ def org_file_type_ext(folder_path,is_com,is_sub,create_nf):
             else:
                 shutil.copy2(str(file), str(dest_folder / file.name))
 
-    print(f"Files in '{folder_path}' organized by file type and extension ({'moved' if is_com == "move" else 'copied'})")
+    print(f"Files in '{source_path}' organized by file type and extension ({'moved' if is_com == "move" else 'copied'})")
 
-def org_modified_date(folder_path,is_com,is_sub,create_nf):
-    files = load_list_files(folder_path,is_sub)
-    save_path = save_path_fuc(folder_path,create_nf)
+def org_modified_date(source_path,is_com,is_sub,create_nf):
+    files = load_list_files(source_path,is_sub)
+    save_path = save_path_fuc(source_path,create_nf)
 
     for file in files:
         if file.is_file():
@@ -146,7 +136,7 @@ def org_modified_date(folder_path,is_com,is_sub,create_nf):
             else:
                 shutil.copy2(str(file), str(dest_folder / file.name))
 
-    print(f"Files in '{folder_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
+    print(f"Files in '{source_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
 
 file_types_ext = {
     "Images": [".png",".jpg",".jpeg",".gif",".bmp",".webp",".ico",".svg",".tiff",".tif",],

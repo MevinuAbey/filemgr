@@ -7,11 +7,9 @@ import datetime
 import zipfile
 import os
 
-def main(path):
-    source_path = path
+def main(source_path,backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     print(f"path to folder backup {source_path}")
     check_quick_backup(source_path)
-    backup_dest, is_compress, backup_mode, exc_or_inc, file_types = menu(source_path)
     #confirmation if backup
     confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
     if not confirm_backup:
@@ -61,38 +59,7 @@ def quick_backup(source_path):
         config = json.load(f)
     backup(source_path, config["destination"], config["is_compress"], config["backup_mode"], config["exc_or_inc"], config["file_types"])
 
-def menu(source_path):
-    while True:
-        backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
-        if not backup_dest:
-            backup_dest = Path(f"C:/backup_files_filemgr/{source_path.name}_backup")
-        dest_path = Path(backup_dest)
-        if dest_path.exists() and dest_path.is_dir():
-            break
-        else:
-            backup_dest.mkdir(parents=True, exist_ok=True)
-            break
 
-    is_compress = questionary.confirm("Do you want to compress the backup?").ask() #yes or no
-    backup_mode = questionary.select(
-        "Do you want to create a timestamped backup or overwriting backup?", choices=["timestamp", "overwrite"]).ask()
-
-    exc_or_inc = questionary.select(
-        "Do you want to exclude or include specific file types?", choices=["Include All", "Exclude", "Include"]).ask()
-    file_types = []
-
-    if exc_or_inc == "Exclude" or exc_or_inc == "Include":
-        file_types = questionary.text(
-            f"Enter file types to {exc_or_inc} (comma separated, e.g., .tmp, .log):").ask()
-        file_types = [ft.strip() for ft in file_types.split(",")] if file_types else []
-
-
-  
-    if not file_types:
-        exc_or_inc = "Include All"
-
-    return (backup_dest, is_compress, backup_mode,
-             exc_or_inc, file_types)
 
 def save_backup_config(source, destination, exc_or_inc, file_types, is_compress, backup_mode):
     config = {
@@ -108,6 +75,8 @@ def save_backup_config(source, destination, exc_or_inc, file_types, is_compress,
 
 def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types):
     print("Starting backup...")
+
+
 
     #backup mode -> filename, time or overwrite fucn 
     if backup_mode == "timestamp":
@@ -129,8 +98,6 @@ def backup(source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_
             backup_name = f"{backup_dest}/{backup_name}"
             normal_backup_it(source_path, backup_name, exc_or_inc, file_types)
 
-def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
-
     def include(file_name):
         if exc_or_inc == "Include All":
             return True
@@ -144,43 +111,31 @@ def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
             return not file_name.endswith(file_types)
         return True
 
-    with zipfile.ZipFile(backup_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    def zip_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
+        with zipfile.ZipFile(backup_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(source_path):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    if include(file):
+                        rel_path = os.path.relpath(full_path, source_path)
+                        zipf.write(full_path, rel_path)
+
+    def normal_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
         for root, dirs, files in os.walk(source_path):
             for file in files:
-                full_path = os.path.join(root, file)
-                if include(file):
-                    rel_path = os.path.relpath(full_path, source_path)
-                    zipf.write(full_path, rel_path)
-
-def normal_backup_it(source_path, backup_name, exc_or_inc, file_types=None):
-    def include(file_name):
-        if exc_or_inc == "Include All":
-            return True
-        
-        file_name = file_name.lower()
-
-        if exc_or_inc == "Include":
-            return file_name.endswith(file_types)
-        
-        if exc_or_inc == "Exclude":
-            return not file_name.endswith(file_types)
-        return True
-    
-    for root, dirs, files in os.walk(source_path):
-        for file in files:
             
-            full_path = os.path.join(root, file)
+                full_path = os.path.join(root, file)
 
-            if include(file):
+                if include(file):
                 
-                # Create relative path
-                rel_path = os.path.relpath(full_path, source_path)
+                    # Create relative path
+                    rel_path = os.path.relpath(full_path, source_path)
                 
-                # Destination path
-                dest_path = os.path.join(backup_name, rel_path)
+                    # Destination path
+                    dest_path = os.path.join(backup_name, rel_path)
                 
-                # Ensure destination folder exists
-                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                    # Ensure destination folder exists
+                    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 
-                # Copy file
-                shutil.copy2(full_path, dest_path)
+                    # Copy file
+                    shutil.copy2(full_path, dest_path)

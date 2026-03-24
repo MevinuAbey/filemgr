@@ -8,6 +8,7 @@ import questionary  # type: ignore
 import backup
 import organize
 import rename
+import menu
 
 # setup command-line arguments
 parser = argparse.ArgumentParser(description="FileMgr")
@@ -17,7 +18,7 @@ parser.add_argument("--a", "--action", choices=["backup", "organize", "rename"],
 
 args = parser.parse_args()
 path = args.path
-folder_path = Path(path)
+source_path = Path(path)
 action = args.a
 #
 
@@ -25,11 +26,11 @@ action = args.a
 def main():
     if check_path():
         selected_action = check_action(action)
-        action_select(selected_action)
+        do_action(selected_action)
 
 
 def check_path():
-    if Path.exists(folder_path) or Path.is_dir(folder_path):  # cheking if path is avalable
+    if Path.exists(source_path) or Path.is_dir(source_path):  # cheking if path is avalable
         return True
     else:
         print("Path You Entered Is not exsisting :)")
@@ -45,14 +46,8 @@ def check_action(action):
     else:
         return action
 
-
-def action_select(action):
-    if action == "backup":
-        backup.main(folder_path)
-    elif action == "organize":
-        organize.main(folder_path)
-    elif action == "rename":
-        rename.main(folder_path)
+def do_action(action):
+    menu.main(action,source_path)
 
 
 if __name__ == "__main__":
