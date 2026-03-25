@@ -2,9 +2,11 @@
 # For CS50 Python Final Project
 import argparse
 import os
+import sys
 from pathlib import Path
 import questionary  # type: ignore
 import menu
+
 
 def main():
     source_path, action = parse_arguments()
@@ -29,6 +31,11 @@ def parse_arguments():
 def ask_for_path():
     while True:
         path = questionary.text("Enter the folder path:").ask()
+
+        if path is None:
+            print("Exiting FileMgr")
+            sys.exit(0)
+
         source_path = Path(path)
         if check_path(source_path):
             return source_path
@@ -47,6 +54,11 @@ def check_action(action):
         print("FileMgr")
         choice = questionary.select("Select Action:", choices=[
                                     "backup", "rename", "organize"]).ask()
+        
+        if choice is None:
+            print("Exiting FileMgr")
+            sys.exit(0)
+
         return choice
     else:
         return action
