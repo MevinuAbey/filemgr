@@ -53,6 +53,7 @@ def check_action(action):
 
 def do_action(action,source_path):
     menu.main(action,source_path)
+    return True
 
 
 if __name__ == "__main__":
