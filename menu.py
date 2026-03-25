@@ -8,23 +8,16 @@ import rename
 def main(action, source_path):
     if action == "backup":
         backup_dest, is_compress, backup_mode, exc_or_inc, file_types = backup_menu(source_path)
-        print(f"path to folder backup {source_path}")
-        #confirmation if backup
-        confirm_backup = questionary.confirm("Do you want to backup with above settings?").ask()
-        if not confirm_backup:
-            print("backup cancelled.")
-            sys.exit(0)
-        #saving confing
-        print("Backup Settings Saved. Next time you can use quick backup to backup with these settings.")
+        if confirm_backup():
+            return source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types
 
     elif action == "organize":
-        org_option, is_sub, is_com, create_nf = organize_menu()
-        organize.main(source_path,org_option,is_sub,is_com,create_nf)
-
+        org_option,is_sub,is_com,create_nf = organize_menu()
+        return source_path, org_option, is_sub, is_com, create_nf
+    
     elif action == "rename":
         rename_option = rename_menu()
-        rename.main(source_path, rename_option)
-
+        return source_path, rename_option
 
 def organize_menu():
     org_option = questionary.select("Organize Files in to folders according to:",
@@ -43,7 +36,7 @@ def backup_menu(source_path):
     while True:
         backup_dest = questionary.text("Enter backup destination folder path: (leave blank to use default)").ask()
         if not backup_dest:
-            backup_dest = Path(f"C:/backup_files_filemgr/{source_path.name}_backup")
+            backup_dest = Path(f"C:/backup_files_filemgr/{source_path.resolve().name}_backup")
         dest_path = Path(backup_dest)
         if dest_path.exists() and dest_path.is_dir():
             break
@@ -69,3 +62,9 @@ def backup_menu(source_path):
 
     return (backup_dest, is_compress, backup_mode,
              exc_or_inc, file_types)
+
+def confirm_backup():
+    confirm = questionary.confirm("Do you want to backup with above settings?").ask()
+    if not confirm:
+        print("backup cancelled.")
+        sys.exit(0)
