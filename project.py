@@ -6,14 +6,20 @@ import sys
 from pathlib import Path
 import questionary  # type: ignore
 import menu
-
+import backup
+import organize
+import rename
 
 def main():
-    source_path, action = parse_arguments()
-    if not check_path(source_path):
-        source_path = ask_for_path()
-    selected_action = check_action(action)
-    do_action(selected_action,source_path)
+    try:
+        source_path, action = parse_arguments()
+        if not check_path(source_path):
+            source_path = ask_for_path()
+        selected_action = check_action(action)
+        do_action(selected_action,source_path)
+    except Exception as e:
+        print(f"error {e}")
+        sys.exit(1)
 
 def parse_arguments():
     # setup command-line arguments
@@ -48,24 +54,33 @@ def check_path(source_path):
     else:
         return False
 
+def ask_for_action():
+    action = questionary.select("Select Action:", choices=[
+                                "backup", "rename", "organize"]).ask()
+    if action is None:
+        print("Exiting FileMgr")
+        sys.exit(0)
+    return action
 
 def check_action(action):
     if not action:
         print("FileMgr")
-        choice = questionary.select("Select Action:", choices=[
-                                    "backup", "rename", "organize"]).ask()
-        
-        if choice is None:
-            print("Exiting FileMgr")
-            sys.exit(0)
-
+        choice = ask_for_action()
         return choice
     else:
         return action
 
 def do_action(action,source_path):
-    menu.main(action,source_path)
-    return True
+    
+    if action == "backup":
+        usr_options = menu.main(action, source_path)
+        backup.main(usr_options)
+    elif action == "organize":
+        usr_options = menu.main(action, source_path)
+        organize.main(usr_options)
+    elif action == "rename":
+        usr_options = menu.main(action, source_path)
+        rename.main(usr_options)
 
 
 if __name__ == "__main__":
