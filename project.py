@@ -73,14 +73,20 @@ def check_action(action):
 def do_action(action, source_path):
     if action == "backup":
         usr_options = menu.backup(source_path)
+        if usr_options is None:
+            return
         backup.main(usr_options)
 
     elif action == "organize":
         usr_options = menu.organize(source_path)
+        if usr_options is None:
+            return
         organize.main(usr_options)
 
     elif action == "rename":
-        usr_options = menu.rename()
+        usr_options = menu.rename(source_path)
+        if usr_options is None:
+            return
         rename.main(usr_options)
 
 if __name__ == "__main__":
