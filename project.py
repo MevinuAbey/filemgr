@@ -70,18 +70,18 @@ def check_action(action):
     else:
         return action
 
-def do_action(action,source_path):
-    
+def do_action(action, source_path):
     if action == "backup":
-        usr_options = menu.main(action, source_path)
+        usr_options = menu.backup(source_path)
         backup.main(usr_options)
-    elif action == "organize":
-        usr_options = menu.main(action, source_path)
-        organize.main(usr_options)
-    elif action == "rename":
-        usr_options = menu.main(action, source_path)
-        rename.main(usr_options)
 
+    elif action == "organize":
+        usr_options = menu.organize(source_path)
+        organize.main(usr_options)
+
+    elif action == "rename":
+        usr_options = menu.rename()
+        rename.main(usr_options)
 
 if __name__ == "__main__":
     main()
