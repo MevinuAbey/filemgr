@@ -1,36 +1,19 @@
 from pathlib import Path
 import sys
 import questionary # type: ignore
-import backup
-import organize
-import rename
 
-def main(action, source_path):
-    if action == "backup":
-        backup_dest, is_compress, backup_mode, exc_or_inc, file_types = backup_menu(source_path)
-        if confirm_backup():
-            return source_path, backup_dest, is_compress, backup_mode, exc_or_inc, file_types
-
-    elif action == "organize":
-        org_option,is_sub,is_com,create_nf = organize_menu()
-        return source_path, org_option, is_sub, is_com, create_nf
-    
-    elif action == "rename":
-        rename_option = rename_menu()
-        return source_path, rename_option
-
-def organize_menu():
+def organize_menu(source_path):
     org_option = questionary.select("Organize Files in to folders according to:",
         choices=["file type","file extention","file type and file extention","modified date"]).ask()
     is_sub = questionary.confirm("also organize files in sub folders:").ask()
     is_com = questionary.select("move files when organizing or copy them:",choices=["copy","move",]).ask()
     create_nf = questionary.confirm("create new folder when organizing:").ask()
-    return org_option,is_sub,is_com,create_nf
+    return (source_path, org_option, is_sub, is_com, create_nf)
 
-def rename_menu():
+def rename_menu(source_path):
     rename_option = questionary.select(
         "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]).ask()
-    return rename_option
+    return (source_path, rename_option)
 
 def backup_menu(source_path):
     while True:
@@ -41,7 +24,7 @@ def backup_menu(source_path):
         if dest_path.exists() and dest_path.is_dir():
             break
         else:
-            backup_dest.mkdir(parents=True, exist_ok=True)
+            dest_path.mkdir(parents=True, exist_ok=True)
             break
 
     is_compress = questionary.confirm("Do you want to compress the backup?").ask() #yes or no
@@ -60,8 +43,9 @@ def backup_menu(source_path):
     if not file_types:
         exc_or_inc = "Include All"
 
-    return (backup_dest, is_compress, backup_mode,
-             exc_or_inc, file_types)
+    if confirm_backup():
+        return (source_path, backup_dest, is_compress,
+                 backup_mode, exc_or_inc, file_types)
 
 def confirm_backup():
     confirm = questionary.confirm("Do you want to backup with above settings?").ask()
