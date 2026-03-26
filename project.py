@@ -36,7 +36,7 @@ def parse_arguments():
 
 def ask_for_path():
     while True:
-        path = questionary.text("Enter the folder path:").ask()
+        path = questionary.text("Enter the source folder path:").ask()
 
         if path is None:
             print("Exiting FileMgr")
