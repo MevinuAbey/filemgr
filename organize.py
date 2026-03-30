@@ -3,12 +3,12 @@ import datetime
 import shutil
 
 
-def do_organize(usr_options):
-    source_path = usr_options["source_path"]
-    organize_option = usr_options["organize_option"]
-    is_organize_sub_folders = usr_options["is_organize_sub_folders"]
-    is_copy_or_move = usr_options["is_copy_or_move"]
-    is_create_new_folder = usr_options["is_create_new_folder"]
+def do_organize(usr_config):
+    source_path = usr_config["source_path"]
+    organize_option = usr_config["organize_option"]
+    is_organize_sub_folders = usr_config["is_organize_sub_folders"]
+    is_copy_or_move = usr_config["is_copy_or_move"]
+    is_create_new_folder = usr_config["is_create_new_folder"]
 
     organize_func = OPTIONS.get(organize_option)
 
