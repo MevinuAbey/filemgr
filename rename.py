@@ -1,103 +1,57 @@
 # rename module for filemgr
 import questionary # type: ignore
 from pathlib import Path
-import re
-import json
 
-def main(source_path, rename_option):
-    do_rename(rename_option, source_path)
+def do_rename(usr_options):
+    source_path = usr_options["source_path"]
+    rename_option = usr_options["rename_option"]
+    file_type = usr_options["file_type"]
 
-def load_list_files(source_path):
-    files = source_path.iterdir()
-    return files
+    if file_type and not file_type.startswith("."):
+        file_type = f".{file_type}"
 
-def do_rename(rename_option, source_path):
-    if rename_option == "Prefix":
-        prefix = questionary.text("Enter the prefix to add:").ask()
-        preview_rename(source_path, rename_option, prefix)
-        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
-        if confirm:
-            rename_prefix(source_path, prefix)
-        
-    elif rename_option == "Suffix":
-        suffix = questionary.text("Enter the suffix to add:").ask()
-        preview_rename(source_path, rename_option, suffix)
-        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
-        if confirm:
-            rename_suffix(source_path, suffix)
-        
-    elif rename_option == "Replace Text":
-        old_text = questionary.text("Enter the text to replace:").ask()
-        new_text = questionary.text("Enter the new text:").ask()
-        preview_rename(source_path, rename_option, old_text, new_text)
-        confirm = questionary.confirm("Do you want to apply this renaming?").ask()
-        if confirm:
-            rename_replace_text(source_path, old_text, new_text)
-        
-    elif rename_option == "Auto Numbering":
-        base_name = questionary.text("Enter the base name for numbering:").ask()
-        start_number = questionary.text("Enter the starting number(leave blank for 1):").ask()
-        rename_auto_numbering(source_path, base_name, start_number)
-
-def get_file_type():
-    file_type = questionary.text("Enter file type filter (e.g., .txt) or leave blank for all files:").ask()
-    file_type = file_type.strip() if file_type else None
-    return file_type
-
-def preview_rename(source_path, rename_option, *args):    
-    files = load_list_files(source_path)
-    print(f"Preview of renaming {rename_option}")
-    if rename_option == "Prefix":
-        prefix = args[0]
-        for file in files:
-            if file.is_file():
-                new_name = prefix + file.name
-                print(f"{file.name} -> {new_name}")
-                break
-    elif rename_option == "Suffix":
-        suffix = args[0]
-        for file in files:
-            if file.is_file():
-                new_name = file.stem + suffix + file.suffix
-                print(f"{file.name} -> {new_name}")
-                break
-    elif rename_option == "Replace Text":
-        old_text, new_text = args
-        for file in files:
-            if file.is_file():
-                new_name = file.name.replace(old_text, new_text)
-                print(f"{file.name} -> {new_name}")
-                break
-
-def rename_prefix(source_path, prefix):
-    file_type = get_file_type()
+    rename_func = OPTIONS.get(rename_option)
+    
     for file in source_path.iterdir():
         if file.is_file() and (not file_type or file.suffix == file_type):
-            new_name = prefix + file.name
-            file.rename(source_path / new_name)
-    print("Renaming completed.")
+               
+               new_name = rename_func(usr_options, file)
+               new_filepath = source_path / new_name
 
-def rename_suffix(source_path, suffix):
-    file_type = get_file_type()
-    for file in source_path.iterdir():
-        if file.is_file() and (not file_type or file.suffix == file_type):
-            new_name = file.stem + suffix + file.suffix
-            file.rename(source_path / new_name)
-    print("Renaming completed.")
+               if not new_filepath.exists():
+                  file.rename(new_filepath)
+               else:
+                  print(f"Skipped {file.name}: {new_name} already exists!")
 
-def rename_replace_text(source_path, old_text, new_text):
-    file_type = get_file_type()
-    for file in source_path.iterdir():
-        if file.is_file() and (not file_type or file.suffix == file_type):
-            new_name = file.name.replace(old_text, new_text)
-            file.rename(source_path / new_name)
-    print("Renaming completed.")
+def rename_prefix(usr_options, file):
+    prefix = usr_options["prefix"]
+    new_name = prefix + file.name
+    return new_name
 
-def rename_auto_numbering(source_path, base_name, start_number):
-    file_type = get_file_type()
-    start_number = int(start_number) if start_number else 1
-    for idx, file in enumerate(source_path.iterdir(), start=start_number):
-        if file.is_file() and (not file_type or file.suffix == file_type):
-            new_name = f"{base_name}_{idx}{file.suffix}"
-            file.rename(source_path / new_name)
-    print("Renaming completed.")
+def rename_suffix(usr_options, file):
+    suffix = usr_options["suffix"]
+    new_name = file.stem + suffix + file.suffix
+    return new_name
+
+def rename_replace_text(usr_options, file):
+    old_text = usr_options["old_text"]
+    new_text = usr_options["new_text"]
+    new_name = file.name.replace(old_text, new_text)
+    return new_name
+
+def rename_auto_numbering(usr_options, file):
+    base_name = usr_options["base_name"]
+    start_number = int(usr_options["start_number"])
+    
+    new_name = f"{base_name}_{start_number}{file.suffix}"
+    usr_options["start_number"] = start_number + 1 
+    
+    return new_name
+
+
+OPTIONS = {
+    "Prefix": rename_prefix,
+    "Suffix": rename_suffix,
+    "Replace Text": rename_replace_text,
+    "Auto Numbering": rename_auto_numbering
+}
