@@ -4,7 +4,7 @@ import questionary # type: ignore
 
 def organize_menu(source_path):
     organize_option = ask(questionary.select("Organize Files in to folders according to:",
-        choices=["file type","file extension","file type and file extension","modified date"]))
+        choices=["file type","file extension","file type and extension","modified date"]))
     is_organize_sub_folders = ask(questionary.confirm("also organize files in sub folders:"))
     is_copy_or_move = ask(questionary.select("Do you want to move or copy files when organizing?:",choices=["copy","move"]))# can use like COPY or MOVE to avoid confusion
     is_create_new_folder = ask(questionary.confirm("create new folder when organizing:"))
