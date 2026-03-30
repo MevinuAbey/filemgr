@@ -96,6 +96,14 @@ def backup_menu(source_path):
     return {"source_path": source_path, "backup_dest": backup_dest, "is_compress": is_compress,
             "backup_mode": backup_mode, "exc_or_inc": exc_or_inc, "file_types": file_types}
 
+def ask_quick_backup():
+        print("Quick Backup Available")
+        is_quick_backup = ask(questionary.confirm("Do you want to perform a quick backup using the last settings?"))
+        if is_quick_backup:
+            return True
+        else:
+            return False
+
 def confirm_action(action):
     confirm = ask(questionary.confirm(f"Do you want to {action} with above settings?"))
     if not confirm:
