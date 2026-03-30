@@ -1,15 +1,24 @@
 # organize module for filemgr
 import datetime
-import questionary # type: ignore
-from pathlib import Path
 import shutil
 
-def main(source_path,org_option, is_sub, is_com,create_nf):
-    do_organize(org_option,is_sub,is_com,source_path,create_nf)
 
-def load_list_files(source_path,is_sub):
+def do_organize(usr_options):
+    source_path = usr_options["source_path"]
+    organize_option = usr_options["organize_option"]
+    is_organize_sub_folders = usr_options["is_organize_sub_folders"]
+    is_copy_or_move = usr_options["is_copy_or_move"]
+    is_create_new_folder = usr_options["is_create_new_folder"]
+
+    organize_func = OPTIONS.get(organize_option)
+
+    report, save_path = process_files(source_path,is_organize_sub_folders,is_create_new_folder,is_copy_or_move,organize_func)
+
+    save_report(report, save_path, organize_option)
+
+def load_list_files(source_path,is_organize_sub_folders):
     #if user organizing files in subfolders using "rglog" otherwise using "iterdir" for listing files
-    files = source_path.rglob("*") if is_sub else source_path.iterdir()
+    files = source_path.rglob("*") if is_organize_sub_folders else source_path.iterdir()
     return files
 
 def save_path_fuc(source_path,create_nf):     
@@ -21,122 +30,86 @@ def save_path_fuc(source_path,create_nf):
         save_path = source_path
     return save_path
 
-def save_report(source_path,is_sub,create_nf,org_option): #needs improvements
-    files = load_list_files(source_path,is_sub)
-    save_path = save_path_fuc(source_path,create_nf)
-    report = {}
-    if org_option == "file type":
-        for file in files:
-            if file.is_file():
-                ext = file.suffix.lower()
-                category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
-                report[file.name] = category
-    elif org_option == "file extention":
-        for file in files:
-            if file.is_file():
-                ext = file.suffix.lower()
-                report[file.name] = ext
-    
-    elif org_option == "file type and file extention":
-        for file in files:
-            if file.is_file():
-                ext = file.suffix.lower()
-                category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
-                report[file.name] = f"{category} ({ext})"
-    
-    elif org_option == "modified date":
-        for file in files:
-            if file.is_file():
-                mod_time = file.stat().st_mtime
-                mod_date = datetime.datetime.fromtimestamp(mod_time)
-                report[file.name] = f"{mod_date.year}-{mod_date.month:02d}-{mod_date.day:02d}"
-
+def save_report(report, save_path, organize_option):
     with open(save_path / "report.txt", "w") as f:
-        f.write(f"Organized by: {org_option}\n")
-        f.write(f"Total files organized: {len(report)}\n\n")
-        for file_name, category in report.items():
-            f.write(f"{file_name} -> {category}\n")
+        f.write(f"Organized by: {organize_option}\n")
+        f.write(f"Total files: {len(report)}\n\n")
 
-def do_organize(org_option,is_sub,is_com,source_path,create_nf):
-    if org_option == "file type": org_file_type(source_path,is_com,is_sub,create_nf)
-    elif org_option == "file extention": org_file_ext(source_path,is_com,is_sub,create_nf)
-    elif org_option == "file type and file extention": org_file_type_ext(source_path,is_com,is_sub,create_nf)
-    elif org_option == "modified date": org_modified_date(source_path,is_com,is_sub,create_nf)
-    save_report(source_path,is_sub,create_nf,org_option)
+        for src, dest in report:
+            f.write(f"{src} -> {dest}\n")
 
-def org_file_type(source_path,is_com,is_sub,create_nf):
-    
-    files = load_list_files(source_path,is_sub)
-    save_path = save_path_fuc(source_path,create_nf)
+def transfer_file(src, dest, mode):
+    dest.parent.mkdir(parents=True, exist_ok=True)
 
-    # Skiping the catagorized folders we'll create
-    category_dirs = [save_path / cat for cat in file_types_ext.keys()] #getting file types from file_types_ext
-    category_dirs.append(save_path / "Others") #append others folder path
+    if mode == "move":
+        shutil.move(str(src), str(dest))
+    else:
+        shutil.copy2(str(src), str(dest))
 
-    for file in files: #for each file in the folder or subforlder if user chooses
-        if file.is_file(): #cheks if its a file
-            ext = file.suffix.lower()
-            category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
-            dest_folder = save_path / category #folder name with catagory like Images,Documents,Video,Music,Others
-            dest_folder.mkdir(exist_ok=True)
+def process_files(source_path,is_organize_sub_folders,is_create_new_folder,is_copy_or_move,organize_func):
+    files = list(load_list_files(source_path, is_organize_sub_folders))  # safe copy
+    save_path = save_path_fuc(source_path, is_create_new_folder)
 
-            if is_com == "move":
-                shutil.move(str(file), str(dest_folder / file.name))
-            else:
-                shutil.copy2(str(file), str(dest_folder / file.name))
-
-def org_file_ext(source_path,is_com,is_sub,create_nf):
-    files = load_list_files(source_path,is_sub)
-    save_path = save_path_fuc(source_path,create_nf)
-
-    for file in files: #for each file in the folder or subforlder if user chooses
-        if file.is_file(): #cheks if its a file
-            ext = file.suffix.lower()
-            if ext:
-                dest_folder = save_path / ext[1:] #folder name without dot like .png -> png
-                dest_folder.mkdir(exist_ok=True)
-
-                if is_com == "move":
-                    shutil.move(str(file), str(dest_folder / file.name))
-                else:
-                    shutil.copy2(str(file), str(dest_folder / file.name))
-    print(f"Files in '{source_path}' organized by file extension ({'moved' if is_com == "move" else 'copied'})")
-
-def org_file_type_ext(source_path,is_com,is_sub,create_nf):
-    files = load_list_files(source_path,is_sub)
-    save_path = save_path_fuc(source_path,create_nf)
+    report = []
 
     for file in files:
-        if file.is_file():
-            ext = file.suffix.lower()
-            category = next((cat for cat, exts in file_types_ext.items() if ext in exts), "Others")
-            dest_folder = save_path / category / ext[1:] #folder name with catagory and extention like Images/png
-            dest_folder.mkdir(parents=True, exist_ok=True)
+        if not file.is_file():
+            continue
 
-            if is_com == "move":
-                shutil.move(str(file), str(dest_folder / file.name))
-            else:
-                shutil.copy2(str(file), str(dest_folder / file.name))
+        dest = organize_func(file, save_path)
 
-    print(f"Files in '{source_path}' organized by file type and extension ({'moved' if is_com == "move" else 'copied'})")
+        if not dest:
+            continue
 
-def org_modified_date(source_path,is_com,is_sub,create_nf):
-    files = load_list_files(source_path,is_sub)
-    save_path = save_path_fuc(source_path,create_nf)
+        # avoid overwrite
+        if dest.exists():
+            print(f"Skipping {file.name} (already exists)")
+            continue
 
-    for file in files:
-        if file.is_file():
-            mod_time = file.stat().st_mtime
-            mod_date = datetime.datetime.fromtimestamp(mod_time)
-            dest_folder = save_path / f"{mod_date.year}" / f"{mod_date.month:02d}" / f"{mod_date.day:02d}"
-            dest_folder.mkdir(parents=True, exist_ok=True)
+        transfer_file(file, dest, is_copy_or_move)
 
-            if is_com == "move":
-                shutil.move(str(file), str(dest_folder / file.name))
-            else:
-                shutil.copy2(str(file), str(dest_folder / file.name))
+        report.append((file.name, str(dest)))
 
-    print(f"Files in '{source_path}' organized by modified date ({'moved' if is_com == "move" else 'copied'})")
+    return report, save_path
+
+def by_extension(file, base_path):
+    ext = file.suffix.lower()
+    if not ext:
+        return None
+    return base_path / ext[1:] / file.name
+
+def by_type(file, base_path):
+    ext = file.suffix.lower()
+
+    category = next(
+        (cat for cat, exts in file_types_ext.items() if ext in exts),
+        "Others"
+    )
+
+    return base_path / category / file.name
+
+def by_type_and_extension(file, base_path):
+    ext = file.suffix.lower()
+
+    category = next(
+        (cat for cat, exts in file_types_ext.items() if ext in exts),
+        "Others"
+    )
+
+    return base_path / category / ext[1:] / file.name
+
+def by_date(file, base_path):
+    mod_time = file.stat().st_mtime
+    mod_date = datetime.datetime.fromtimestamp(mod_time)
+
+    return base_path / str(mod_date.year) / f"{mod_date.month:02d}" / f"{mod_date.day:02d}" / file.name
+
+OPTIONS = {
+    "file type": by_type,
+    "file extension": by_extension,
+    "file type and extension": by_type_and_extension,
+    "modified date": by_date,
+}
 
 file_types_ext = {
     "Images": [".png",".jpg",".jpeg",".gif",".bmp",".webp",".ico",".svg",".tiff",".tif",],
