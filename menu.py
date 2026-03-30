@@ -45,7 +45,7 @@ def rename_menu(source_path):
         return {"source_path": source_path,
                 "rename_option": rename_option,
                 "file_type": file_type,
-                "text": text
+                f"{rename_option.lower()}": text
                 }
     
     elif rename_option == "Replace Text":
