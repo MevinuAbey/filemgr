@@ -2,10 +2,10 @@
 import questionary # type: ignore
 from pathlib import Path
 
-def do_rename(usr_options):
-    source_path = usr_options["source_path"]
-    rename_option = usr_options["rename_option"]
-    file_type = usr_options["file_type"]
+def do_rename(usr_config):
+    source_path = usr_config["source_path"]
+    rename_option = usr_config["rename_option"]
+    file_type = usr_config["file_type"]
 
     if file_type and not file_type.startswith("."):
         file_type = f".{file_type}"
@@ -15,7 +15,7 @@ def do_rename(usr_options):
     for file in source_path.iterdir():
         if file.is_file() and (not file_type or file.suffix == file_type):
                
-               new_name = rename_func(usr_options, file)
+               new_name = rename_func(usr_config, file)
                new_filepath = source_path / new_name
 
                if not new_filepath.exists():
@@ -23,28 +23,28 @@ def do_rename(usr_options):
                else:
                   print(f"Skipped {file.name}: {new_name} already exists!")
 
-def rename_prefix(usr_options, file):
-    prefix = usr_options["prefix"]
+def rename_prefix(usr_config, file):
+    prefix = usr_config["prefix"]
     new_name = prefix + file.name
     return new_name
 
-def rename_suffix(usr_options, file):
-    suffix = usr_options["suffix"]
+def rename_suffix(usr_config, file):
+    suffix = usr_config["suffix"]
     new_name = file.stem + suffix + file.suffix
     return new_name
 
-def rename_replace_text(usr_options, file):
-    old_text = usr_options["old_text"]
-    new_text = usr_options["new_text"]
+def rename_replace_text(usr_config, file):
+    old_text = usr_config["old_text"]
+    new_text = usr_config["new_text"]
     new_name = file.name.replace(old_text, new_text)
     return new_name
 
-def rename_auto_numbering(usr_options, file):
-    base_name = usr_options["base_name"]
-    start_number = int(usr_options["start_number"])
+def rename_auto_numbering(usr_config, file):
+    base_name = usr_config["base_name"]
+    start_number = int(usr_config["start_number"])
     
     new_name = f"{base_name}_{start_number}{file.suffix}"
-    usr_options["start_number"] = start_number + 1 
+    usr_config["start_number"] = start_number + 1 
     
     return new_name
 
