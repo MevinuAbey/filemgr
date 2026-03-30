@@ -24,13 +24,12 @@ def main():
 def parse_arguments():
     # setup command-line arguments
     parser = argparse.ArgumentParser(description="FileMgr")
-    parser.add_argument("-p", "--path", help="folder path",
-                    default=os.getcwd())  # needs to input paths as "path"
+    parser.add_argument("-p", "--path", help="folder path")  # needs to input paths as "path"
     parser.add_argument("-a", "--action", choices=["backup", "organize", "rename"], nargs="?")
 
     args = parser.parse_args()
     path = args.path
-    source_path = Path(path)
+    source_path = Path(path) if path else None
     action = args.action
     return source_path, action
 
@@ -49,6 +48,8 @@ def ask_for_path():
             print("Invalid path. Please enter a valid folder path.")
 
 def check_path(source_path):
+    if source_path is None:
+        return False
     if source_path.exists() and source_path.is_dir():  # cheking if path is available
         return True
     else:
@@ -72,22 +73,22 @@ def check_action(action):
 
 def do_action(action, source_path):
     if action == "backup":
-        usr_options = menu.backup(source_path)
+        usr_options = menu.backup_menu(source_path)
         if usr_options is None:
             return
         backup.main(usr_options)
 
     elif action == "organize":
-        usr_options = menu.organize(source_path)
+        usr_options = menu.organize_menu(source_path)
         if usr_options is None:
             return
-        organize.main(usr_options)
+        organize.do_organize(usr_options)
 
     elif action == "rename":
-        usr_options = menu.rename(source_path)
+        usr_options = menu.rename_menu(source_path)
         if usr_options is None:
             return
-        rename.main(usr_options)
+        rename.do_rename(usr_options)
 
 if __name__ == "__main__":
     main()
