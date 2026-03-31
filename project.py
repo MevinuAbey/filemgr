@@ -11,6 +11,7 @@ import rename
 
 # main function to run the program
 def main():
+    print("FileMgr")
     try:
         source_path, action = parse_arguments()
 
@@ -51,7 +52,8 @@ def ask_for_path():
     while True:
         path = questionary.text("Enter the source folder path:").ask()
         #if path input is with quotes, remove the quotes
-        path = path.strip('"').strip("'")
+        if path:
+            path = path.strip('"').strip("'")
 
         if path is None: # if user cancels the input (control+c) exit from program
             print("Exiting FileMgr")
@@ -66,7 +68,6 @@ def ask_for_path():
 # function to check if action is provided, if not ask for action
 def check_action(action):
     if not action:
-        print("FileMgr")
         choice = ask_for_action()
         return choice
     else:
