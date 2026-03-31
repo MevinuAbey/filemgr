@@ -1,7 +1,8 @@
 from pathlib import Path
 import sys
-import questionary # type: ignore
+import questionary
 
+# organize menu to get user settings for organize function
 def organize_menu(source_path):
     organize_option = ask(questionary.select("Organize Files in to folders according to:",
         choices=["file type","file extension","file type and extension","modified date"]))
@@ -19,6 +20,7 @@ def organize_menu(source_path):
             "is_create_new_folder": is_create_new_folder
             }
 
+# rename menu to get user settings for rename function
 def rename_menu(source_path):
     rename_option = ask(questionary.select(
         "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]))
@@ -60,14 +62,17 @@ def rename_menu(source_path):
                 "new_text": new_text
                 }
 
+# backup menu to get user settings for backup function
 def backup_menu(source_path):
 
     backup_dest = ask(questionary.text("Enter backup destination folder path: (leave blank to use default)"))
+
     if backup_dest == "":
+        # default backup destination
         backup_dest = (Path.home() / "backup_files_filemgr" / f"{source_path.resolve().name}_backup")
     dest_path = Path(backup_dest)
 
-    dest_path.mkdir(parents=True, exist_ok=True)
+    dest_path.mkdir(parents=True, exist_ok=True) # create backup destination folder if it doesn't exist
 
     is_compress = ask(questionary.confirm("Do you want to compress the backup?"))
 
@@ -96,6 +101,7 @@ def backup_menu(source_path):
     return {"source_path": source_path, "backup_dest": backup_dest, "is_compress": is_compress,
             "backup_mode": backup_mode, "exc_or_inc": exc_or_inc, "file_types": file_types}
 
+# ask user if want to do quick backup
 def ask_quick_backup():
         print("Quick Backup Available")
         is_quick_backup = ask(questionary.confirm("Do you want to perform a quick backup using the last settings?"))
@@ -104,6 +110,7 @@ def ask_quick_backup():
         else:
             return False
 
+# ask user to confirm to do selected action with user entered settings
 def confirm_action(action):
     confirm = ask(questionary.confirm(f"Do you want to {action} with above settings?"))
     if not confirm:
@@ -111,6 +118,7 @@ def confirm_action(action):
         return None
     return True
 
+# fuction to check if user cancelled the prompt and then exit the program 
 def ask(prompt):
     usr_input = prompt.ask()
 
