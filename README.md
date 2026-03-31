@@ -8,7 +8,7 @@ Harvard CS50 Python Final Project By Mevinu Thewjaya Abeysinghe.
 </p>
 
 #### 🎥 Video Demo  
-<URL HERE>
+<URL [HERE](https://youtu.be/cBQLZqGWKLY)>
 
 ---
 
