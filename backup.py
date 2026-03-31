@@ -5,8 +5,7 @@ import datetime
 import zipfile
 import os
 
-# quick backup
-
+# fuction to check is quick backup is avalable (is backup_config.json exist and valid)
 def is_quick_backup(source_path):
     try:
         with open(f"{source_path}/backup_config.json", "r") as f:
@@ -27,23 +26,24 @@ def is_quick_backup(source_path):
             if not isinstance(config["exc_or_inc"], str) or config["exc_or_inc"] not in ["Exclude", "Include", "Include All"]:
                 return False
             return True
-    except FileNotFoundError:
+    except FileNotFoundError: # backup_config.json not available
         return False
-    except json.JSONDecodeError:
+    except json.JSONDecodeError: # backup_config.json is not valid json
         print("Invalid JSON in backup_config.json.")
         return False
-    except KeyError as e:
+    except KeyError as e: # backup_config.json is missing required config values
         print(f"Missing key {e} in backup_config.json.")
         return False
 
+# function to do quick backup using backup_config.json config values
 def do_quick_backup(source_path):
     with open(f"{source_path}/backup_config.json", "r") as f:
         config = json.load(f)
     do_backup(config)
 
-# backup
-
+# main function to do backup using user settings
 def do_backup(usr_config):
+    # get user congig values
     source_path = Path(usr_config["source_path"])
     backup_dest = Path(usr_config["backup_dest"])
     is_compress = usr_config["is_compress"]
@@ -53,44 +53,53 @@ def do_backup(usr_config):
 
     print("Starting backup...")
 
+    # create backup name based on backup mode
     timestamp = f"_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}" if backup_mode == "timestamp" else ""
     backup_base_name = f"{source_path.resolve().name}_backup{timestamp}"
     backup_name = backup_dest / backup_base_name
 
-    if is_compress:
+    # if backup is compress create zip backup else create normal backup
+    if is_compress: 
         create_zip_backup(source_path, str(backup_name) + ".zip", exc_or_inc, file_types)
     else:
         create_normal_backup(source_path, str(backup_name), exc_or_inc, file_types)
         
+    # run save_backup_config function to save config to backup_config.json in source path
     save_backup_config(usr_config)
 
+# function to check if file should be included in backup based on user settings
 def exc_or_include(file_name, exc_or_inc, file_types):
-    if exc_or_inc == "Include All" or not file_types:
+    # include all files
+    if exc_or_inc == "Include All" or not file_types: 
         return True
         
     file_name = file_name.lower()
     file_types_tuple = tuple(file_types)
 
-    if exc_or_inc == "Include":
+    # only include files user entered to include
+    if exc_or_inc == "Include": 
         return file_name.endswith(file_types_tuple)
-        
+    
+    # exclude files user entered to exclude
     if exc_or_inc == "Exclude":
         return not file_name.endswith(file_types_tuple)
         
     return True
 
+# function to create zip backup
 def create_zip_backup(source_path, backup_zip_path, exc_or_inc, file_types):
     with zipfile.ZipFile(backup_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(source_path):
             for file in files:
-                if file == "backup_config.json":
+                if file == "backup_config.json": # skip backup_config.json from backup
                     continue
                     
-                if exc_or_include(file, exc_or_inc, file_types):
-                    full_path = os.path.join(root, file)
+                if exc_or_include(file, exc_or_inc, file_types): # check file to be in backup or not
+                    full_path = os.path.join(root, file) 
                     rel_path = os.path.relpath(full_path, source_path)
                     zipf.write(full_path, rel_path)
 
+# function to create normal backup
 def create_normal_backup(source_path, backup_dir_path, exc_or_inc, file_types):
     for root, dirs, files in os.walk(source_path):
         for file in files:
@@ -105,6 +114,7 @@ def create_normal_backup(source_path, backup_dir_path, exc_or_inc, file_types):
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 shutil.copy2(full_path, dest_path)
 
+# function to save user config to backup_config.json in source path
 def save_backup_config(usr_config):
     source_path = usr_config["source_path"]
     config_to_save = {
