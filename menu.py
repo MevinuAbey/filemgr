@@ -22,11 +22,12 @@ def organize_menu(source_path):
 
 # rename menu to get user settings for rename function
 def rename_menu(source_path):
-    rename_option = ask(questionary.select(
-        "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]))
-    
+
     file_type = ask(questionary.text("Enter file type filter (e.g., .txt) or leave blank for all files:"))
     file_type = file_type.strip() if file_type else None
+
+    rename_option = ask(questionary.select(
+        "Choose a renaming option:", choices=["Prefix", "Suffix", "Replace Text", "Auto Numbering"]))
     
     if rename_option == "Auto Numbering":
         base_name = ask(questionary.text("Enter the base name for numbering:"))
