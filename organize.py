@@ -2,8 +2,9 @@
 import datetime
 import shutil
 
-
+# main function to organize files based on user settings
 def do_organize(usr_config):
+    # get user settings from usr_config
     source_path = usr_config["source_path"]
     organize_option = usr_config["organize_option"]
     is_organize_sub_folders = usr_config["is_organize_sub_folders"]
@@ -16,10 +17,12 @@ def do_organize(usr_config):
 
     save_report(report, save_path, organize_option)
 
+
 def load_list_files(source_path,is_organize_sub_folders):
     #if user organizing files in subfolders using "rglog" otherwise using "iterdir" for listing files
     files = source_path.rglob("*") if is_organize_sub_folders else source_path.iterdir()
     return files
+
 
 def save_path_fuc(source_path,create_nf):     
     #if user choosed make diffrent foldr for organized files make it
@@ -30,6 +33,7 @@ def save_path_fuc(source_path,create_nf):
         save_path = source_path
     return save_path
 
+# function to save report of organized files to report.txt in save path
 def save_report(report, save_path, organize_option):
     with open(save_path / "report.txt", "w") as f:
         f.write(f"Organized by: {organize_option}\n")
@@ -38,6 +42,7 @@ def save_report(report, save_path, organize_option):
         for src, dest in report:
             f.write(f"{src} -> {dest}\n")
 
+# function to transfer file from src to dest based on user choice of copy or move
 def transfer_file(src, dest, mode):
     dest.parent.mkdir(parents=True, exist_ok=True)
 
@@ -46,8 +51,10 @@ def transfer_file(src, dest, mode):
     else:
         shutil.copy2(str(src), str(dest))
 
+
 def process_files(source_path,is_organize_sub_folders,is_create_new_folder,is_copy_or_move,organize_func):
-    files = list(load_list_files(source_path, is_organize_sub_folders))  # safe copy
+    # get list of files to organize and save path for organized files
+    files = list(load_list_files(source_path, is_organize_sub_folders))
     save_path = save_path_fuc(source_path, is_create_new_folder)
 
     report = []
@@ -104,6 +111,7 @@ def by_date(file, base_path):
 
     return base_path / str(mod_date.year) / f"{mod_date.month:02d}" / f"{mod_date.day:02d}" / file.name
 
+# dictionary to map organize options to their functions
 OPTIONS = {
     "file type": by_type,
     "file extension": by_extension,
