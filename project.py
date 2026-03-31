@@ -50,6 +50,8 @@ def check_path(source_path):
 def ask_for_path():
     while True:
         path = questionary.text("Enter the source folder path:").ask()
+        #if path input is with quotes, remove the quotes
+        path = path.strip('"').strip("'")
 
         if path is None: # if user cancels the input (control+c) exit from program
             print("Exiting FileMgr")
@@ -93,17 +95,21 @@ def do_action(action, source_path):
                 return
             backup.do_backup(usr_config)
 
+        print("\nBackup completed.")
+
     elif action == "organize":
         usr_config = menu.organize_menu(source_path)
         if usr_config is None:
             return
         organize.do_organize(usr_config)
+        print("\nOrganizing completed.")
 
     elif action == "rename":
         usr_config = menu.rename_menu(source_path)
         if usr_config is None:
             return
         rename.do_rename(usr_config)
+        print("\nRenaming completed.")
 
 if __name__ == "__main__":
     main()
